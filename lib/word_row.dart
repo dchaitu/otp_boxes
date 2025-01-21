@@ -1,20 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/enum.dart';
 import 'package:otp_boxes/input_box.dart';
+import 'package:otp_boxes/provider/text_input_provider.dart';
 
-class WordRow extends StatelessWidget {
-  final wordLength = 5;
+class WordRow extends ConsumerWidget {
+  final int wordLength;
+  final int rowIndex;
 
-  const WordRow({super.key});
+  const WordRow({super.key, this.wordLength = 5, required this.rowIndex});
 
   @override
-  Widget build(BuildContext context) {
-    final List<InputBox> boxes = List.empty(growable: true);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(textInputProvider);
+    final isActiveRow = rowIndex == state.currentRow;
+    final currentWord = isActiveRow
+        ? state.currentWord
+        : (rowIndex < state.userWords.length ? state.userWords[rowIndex] : '');
 
-    for (int j = 0; j < wordLength; j++) {
-      boxes.add(InputBox(onChanged: (value) {
-        print("$value");
-      }));
-    }
-    return Row(mainAxisSize: MainAxisSize.min, children: boxes);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(wordLength, (index) {
+        final letter = index < currentWord.length ? currentWord[index] : '';
+        final tileIndex = (rowIndex * wordLength) + index;
+        final validation = tileIndex < state.tilesEntered.length
+            ? state.tilesEntered[tileIndex].validate
+            : TileValidate.notAnswered;
+
+        final controller = TextEditingController(
+          text: letter,
+        );
+
+        return InputBox(controller: controller,validation: validation,);
+      }),
+    );
   }
 }

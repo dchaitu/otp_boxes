@@ -20,21 +20,21 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(
-            "Wordle",
-            style: TextStyle(color: Colors.black, fontSize: 24),
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text(
+              "Wordle",
+              style: TextStyle(color: Colors.black, fontSize: 24),
+            ),
+            centerTitle: true),
+        body: Center(
+          child: Column(
+            children: [
+              Expanded(flex: 5, child: WordGrid()),
+              Expanded(flex: 2, child: KeyboardWidget())
+            ],
           ),
-            centerTitle:true
         ),
-        body: const Center(
-            child: Column(
-          children: [
-            Expanded(flex: 5, child: WordGrid()),
-            Expanded(flex: 2, child: KeyboardWidget())
-          ],
-        )),
-        backgroundColor: Colors.amber,
+        backgroundColor: Colors.black,
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/constants/key_colors.dart';
+import 'package:otp_boxes/enum.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
 
 class KeyboardWidget extends ConsumerWidget {
@@ -27,13 +29,14 @@ Widget allLetters(WidgetRef ref) {
     for (var key in row.split(' ')) {
       if (key.contains('Enter')) {
         eachRow.add(keyBoardButton(
-            key, () => ref.read(textInputProvider.notifier).enterChar()));
+            key, () => ref.read(textInputProvider.notifier).enterChar(), ref));
       } else if (key.contains('Back')) {
         eachRow.add(keyBoardButton(
-            key, () => ref.read(textInputProvider.notifier).removeChar()));
-      } else
+            key, () => ref.read(textInputProvider.notifier).removeChar(), ref));
+      } else {
         eachRow.add(keyBoardButton(
-            key, () => ref.read(textInputProvider.notifier).addChar(key)));
+            key, () => ref.read(textInputProvider.notifier).addChar(key), ref));
+      }
     }
 
     keyboard.add(Row(
@@ -48,10 +51,14 @@ Widget allLetters(WidgetRef ref) {
   );
 }
 
-Widget keyWidget(String letter, VoidCallback onTap, Widget childWidget) {
-  final buttonColor = Color.fromARGB(44, 44, 44, 44);
+Widget keyWidget(
+    String letter, VoidCallback onTap, Widget childWidget, WidgetRef ref) {
+  final keyValidationStatus = ref.watch(textInputProvider).keyColors;
+  final validation = keyValidationStatus[letter] ?? TileValidate.notAnswered;
+  final buttonColor = validationColors[validation];
   const double marginSpace = 4.0;
   const double circularRadius = 8;
+  print("buttonColor $buttonColor, validation $validation");
 
   return InkWell(
     onTap: onTap,
@@ -62,30 +69,45 @@ Widget keyWidget(String letter, VoidCallback onTap, Widget childWidget) {
       ),
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.all(marginSpace),
-      child: Center(child: childWidget),
       width: 40,
       height: 60,
+      child: Center(child: childWidget),
     ),
   );
 }
 
-Widget keyBoardButton(String letter, VoidCallback onTap) {
-
+Widget keyBoardButton(String letter, VoidCallback onTap, WidgetRef ref) {
   if (letter == 'Enter') {
-    return SizedBox(width:80,child: keyWidget(letter, onTap, const Icon(Icons.keyboard_return, size: 24, color: Colors.white,)));
-
+    return SizedBox(
+      width: 80,
+      child: keyWidget(
+          letter,
+          onTap,
+          const Icon(
+            Icons.keyboard_return,
+            size: 24,
+            color: Colors.white,
+          ),
+          ref),
+    );
   } else if (letter == 'Back') {
-
-    return SizedBox(width:80,child: keyWidget(letter, onTap, const Icon(Icons.backspace_outlined, size: 24,color: Colors.white)));
+    return SizedBox(
+      width: 80,
+      child: keyWidget(
+          letter,
+          onTap,
+          const Icon(Icons.backspace_outlined, size: 24, color: Colors.white),
+          ref),
+    );
   } else {
     return keyWidget(
-      letter, onTap, Text(
-      letter,
-      style: const TextStyle(
-          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-    ),
-    );
-
-
+        letter,
+        onTap,
+        Text(
+          letter,
+          style: const TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        ref);
   }
 }

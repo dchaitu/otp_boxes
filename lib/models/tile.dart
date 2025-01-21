@@ -2,7 +2,13 @@ import 'package:otp_boxes/enum.dart';
 
 class Tile {
   final String letter;
-  final TileValidate validate;
+  TileValidate validate;
 
   Tile({required this.letter, required this.validate});
+
+  @override
+  String toString()
+  {
+    return letter;
+  }
 }
