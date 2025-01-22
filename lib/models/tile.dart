@@ -1,8 +1,8 @@
-import 'package:otp_boxes/enum.dart';
+import 'package:otp_boxes/constants/enum.dart';
 
 class Tile {
   final String letter;
-  TileValidate validate;
+  TileType validate;
 
   Tile({required this.letter, required this.validate});
 

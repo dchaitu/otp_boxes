@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:otp_boxes/word_row.dart';
+import 'package:otp_boxes/widgets/word_row_widget.dart';
 
-class WordGrid extends StatelessWidget {
+class WordGridWidget extends StatelessWidget {
   final int noOfChances;
   final int wordLength;
 
-  const WordGrid({super.key, this.noOfChances = 6, this.wordLength = 5});
+  const WordGridWidget({super.key, this.noOfChances = 6, this.wordLength = 5});
 
   @override
   Widget build(BuildContext context) {
     final rows = List.generate(
       noOfChances,
-      (index) => WordRow(
+      (index) => WordRowWidget(
         wordLength: wordLength,
         rowIndex: index,
       ),

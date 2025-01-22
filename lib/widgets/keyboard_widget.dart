@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/key_colors.dart';
-import 'package:otp_boxes/enum.dart';
+import 'package:otp_boxes/constants/enum.dart';
+import 'package:otp_boxes/provider/key_color_provider.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
+import 'package:otp_boxes/provider/theme_provider.dart';
+import 'package:otp_boxes/themes/themes.dart';
 
 class KeyboardWidget extends ConsumerWidget {
   const KeyboardWidget({
@@ -29,7 +32,7 @@ Widget allLetters(WidgetRef ref) {
     for (var key in row.split(' ')) {
       if (key.contains('Enter')) {
         eachRow.add(keyBoardButton(
-            key, () => ref.read(textInputProvider.notifier).enterChar(), ref));
+            key, () => ref.read(textInputProvider.notifier).enterChar(ref), ref));
       } else if (key.contains('Back')) {
         eachRow.add(keyBoardButton(
             key, () => ref.read(textInputProvider.notifier).removeChar(), ref));
@@ -53,12 +56,14 @@ Widget allLetters(WidgetRef ref) {
 
 Widget keyWidget(
     String letter, VoidCallback onTap, Widget childWidget, WidgetRef ref) {
-  final keyValidationStatus = ref.watch(textInputProvider).keyColors;
-  final validation = keyValidationStatus[letter] ?? TileValidate.notAnswered;
-  final buttonColor = validationColors[validation];
+  final keyValidationStatus = ref.watch(keyColorProvider);
+
+  final tileType = keyValidationStatus[letter] ?? TileType.notAnswered;
+  final buttonColor = getColorFromTile[tileType];
   const double marginSpace = 4.0;
   const double circularRadius = 8;
-  print("buttonColor $buttonColor, validation $validation");
+  print("buttonColor $buttonColor, tileType $tileType");
+
 
   return InkWell(
     onTap: onTap,
@@ -77,17 +82,16 @@ Widget keyWidget(
 }
 
 Widget keyBoardButton(String letter, VoidCallback onTap, WidgetRef ref) {
+  final isDarkTheme = ref.watch(themeProvider);
+  final Color? keyColor =  isDarkTheme ? darkTheme.appBarTheme.titleTextStyle?.color: lightTheme.appBarTheme.titleTextStyle?.color;
+
   if (letter == 'Enter') {
     return SizedBox(
       width: 80,
       child: keyWidget(
           letter,
           onTap,
-          const Icon(
-            Icons.keyboard_return,
-            size: 24,
-            color: Colors.white,
-          ),
+          Icon(Icons.keyboard_return, size: 24, color: keyColor),
           ref),
     );
   } else if (letter == 'Back') {
@@ -96,17 +100,14 @@ Widget keyBoardButton(String letter, VoidCallback onTap, WidgetRef ref) {
       child: keyWidget(
           letter,
           onTap,
-          const Icon(Icons.backspace_outlined, size: 24, color: Colors.white),
+          Icon(Icons.backspace_outlined, size: 24, color: keyColor),
           ref),
     );
   } else {
     return keyWidget(
-        letter,
-        onTap,
-        Text(
-          letter,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+        letter, onTap,
+        Text(letter,
+          style: TextStyle(color: keyColor, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         ref);
   }

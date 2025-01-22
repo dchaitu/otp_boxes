@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:otp_boxes/enum.dart';
-import 'package:otp_boxes/input_box.dart';
+import 'package:otp_boxes/constants/enum.dart';
+import 'package:otp_boxes/widgets/input_box_widget.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
 
-class WordRow extends ConsumerWidget {
+class WordRowWidget extends ConsumerWidget {
   final int wordLength;
   final int rowIndex;
 
-  const WordRow({super.key, this.wordLength = 5, required this.rowIndex});
+  const WordRowWidget({super.key, this.wordLength = 5, required this.rowIndex});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,13 +26,11 @@ class WordRow extends ConsumerWidget {
         final tileIndex = (rowIndex * wordLength) + index;
         final validation = tileIndex < state.tilesEntered.length
             ? state.tilesEntered[tileIndex].validate
-            : TileValidate.notAnswered;
+            : TileType.notAnswered;
 
-        final controller = TextEditingController(
-          text: letter,
-        );
+        final controller = TextEditingController(text: letter);
 
-        return InputBox(controller: controller,validation: validation,);
+        return InputBoxWidget(controller: controller,validate: validation,);
       }),
     );
   }

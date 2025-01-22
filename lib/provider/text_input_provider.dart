@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 import 'package:otp_boxes/constants/key_colors.dart';
-import 'package:otp_boxes/enum.dart';
+import 'package:otp_boxes/constants/enum.dart';
+import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
+import 'package:otp_boxes/provider/key_color_provider.dart';
 
 import '../models/tile.dart';
 
@@ -20,7 +19,7 @@ class WordCheck {
   int currentRow;
   int currentPosition;
   List<Tile> tilesEntered;
-  Map<String, TileValidate> keyColors;
+  Map<String, TileType> keyColors;
 
   WordCheck(
       {required this.userWords,
@@ -48,7 +47,7 @@ class WordCheck {
       int? currentRow,
       int? currentPosition,
       List<Tile>? tilesEntered,
-        Map<String, TileValidate>? keyColors}) {
+        Map<String, TileType>? keyColors}) {
     return WordCheck(
         userWords: userWords ?? this.userWords,
         actualWord: actualWord ?? this.actualWord,
@@ -78,7 +77,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
           currentPosition: state.currentPosition + 1,
           tilesEntered: [
             ...state.tilesEntered,
-            Tile(letter: letter, validate: TileValidate.notAnswered)
+            Tile(letter: letter, validate: TileType.notAnswered)
           ]);
       controller.text = state.currentWord;
       print(letter);
@@ -103,12 +102,18 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
     state = state.copyWith(isWon: true);
   }
 
-  void enterChar() {
+  void enterChar(WidgetRef ref) {
     if (state.currentWord.length == 5 && state.noOfChances > 0) {
       List remainingCorrect = state.actualWord.characters.toList();
       if (state.actualWord == state.currentWord) {
+        for(int i=0;i<5;i++)
+          {
+            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.correctPosition);
+
+          }
+
         for (int i = state.currentRow * 5; i < state.currentRow * 5 + 5; i++) {
-          state.tilesEntered[i].validate = TileValidate.correctPosition;
+          state.tilesEntered[i].validate = TileType.correctPosition;
         }
 
         state = state.copyWith(
@@ -128,25 +133,33 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
           if (state.currentWord[i] == state.actualWord[i]) {
             remainingCorrect.remove(state.currentWord[i]);
             state.tilesEntered[i + (state.currentRow * 5)].validate =
-                TileValidate.correctPosition;
-            state.keyColors[state.currentWord[i]] = TileValidate.correctPosition;
+                TileType.correctPosition;
+            state.keyColors[state.currentWord[i]] = TileType.correctPosition;
 
           }
         }
         for (int i = 0; i < 5; i++) {
           if (state.currentWord[i] == state.actualWord[i]) {
-            remainingCorrect.remove(state.currentWord[i]);
+            {
+              remainingCorrect.remove(state.currentWord[i]);
+              ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.correctPosition);
+
+            }
             state.tilesEntered[i + (state.currentRow * 5)].validate =
-                TileValidate.correctPosition;
-            state.keyColors[state.currentWord[i]] = TileValidate.correctPosition;
+                TileType.correctPosition;
+            state.keyColors[state.currentWord[i]] = TileType.correctPosition;
           } else if (remainingCorrect.contains(state.currentWord[i])) {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
-                TileValidate.present;
-            state.keyColors[state.currentWord[i]] = TileValidate.present;
+                TileType.present;
+            // state.keyColors[state.currentWord[i]] = TileValidate.present;
+            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.present);
+
           } else {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
-                TileValidate.notPresent;
-            state.keyColors[state.currentWord[i]] = TileValidate.notPresent;
+                TileType.notPresent;
+            // state.keyColors[state.currentWord[i]] = TileValidate.notPresent;
+            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.notPresent);
+
           }
         }
 
@@ -173,7 +186,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
   }
 
   void resetGameState(WidgetRef ref) {
-    final data = ref.watch(userDataProvider);
+    final data = ref.watch(getWordFromWordsProvider);
     state = state.copyWith(
       userWords: [],
       actualWord: data.when(
@@ -195,7 +208,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
 
 final textInputProvider =
     StateNotifierProvider<TextInputNotifier, WordCheck>((ref) {
-  final data = ref.watch(userDataProvider);
+  final data = ref.watch(getWordFromWordsProvider);
 
   return TextInputNotifier(
     wordCheck: WordCheck(
@@ -217,23 +230,3 @@ final textInputProvider =
   );
 });
 
-class ApiService {
-  String wordUrl = 'http://127.0.0.1:8000/word/';
-
-  Future<String> getWord() async {
-    final response = await http.get(Uri.parse(wordUrl));
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      var word = jsonData['word'];
-      return word;
-    } else {
-      throw Exception(response.reasonPhrase);
-    }
-  }
-}
-
-final userWordProvider = Provider<ApiService>((ref) => ApiService());
-
-final userDataProvider = FutureProvider<String>((ref) async {
-  return ref.watch(userWordProvider).getWord();
-});

@@ -1,5 +1,5 @@
 
-enum TileValidate{
+enum TileType{
   correctPosition,
   present,
   incorrect,
