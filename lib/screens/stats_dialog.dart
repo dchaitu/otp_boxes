@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/provider/text_input_provider.dart';
 import 'package:otp_boxes/screens/game_screen.dart';
 
-class StatsDialog extends StatelessWidget {
+class StatsDialog extends ConsumerWidget {
   const StatsDialog({super.key});
 
   Widget scoreInField(String number, String field) {
@@ -11,11 +13,11 @@ class StatsDialog extends StatelessWidget {
         children: [
           Text(
             number,
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           Text(
             field,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           )
         ],
       ),
@@ -23,7 +25,7 @@ class StatsDialog extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       content: Column(
@@ -32,9 +34,9 @@ class StatsDialog extends StatelessWidget {
         children: [
           IconButton(
               onPressed: () {},
-              icon: Icon(Icons.clear),
+              icon: const Icon(Icons.clear),
               alignment: Alignment.topRight),
-          Expanded(
+          const Expanded(
               child: Text(
             'Statistics',
             style: TextStyle(fontSize: 24, fontFamily: 'Georgia'),
@@ -50,12 +52,23 @@ class StatsDialog extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(child: ElevatedButton(onPressed: (){
-            Navigator.pushAndRemoveUntil(context, 
-                MaterialPageRoute(builder: (context) => GameScreen()), (route)=> false);
-          }, child: Text('Replay')))
+          Expanded(
+              child: ElevatedButton(
+                  onPressed: () {
+                    // resetGameState
+                    ref.read(textInputProvider.notifier).resetGameState(ref);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const GameScreen()),
+                        (route) => false);
+                  },
+                  child: const Text('Replay')))
         ],
       ),
     );
   }
 }
+
+
+

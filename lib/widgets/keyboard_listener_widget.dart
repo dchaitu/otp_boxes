@@ -14,18 +14,40 @@ class KeyboardListenerWidget extends ConsumerWidget {
         focusNode: FocusNode(),
         onKeyEvent: (KeyEvent event) {
           if (event is KeyDownEvent) {
-            handleKeyPress(event.logicalKey,ref);
+            handleKeyPress(context,event.logicalKey,ref);
           }
         },
         child: const GameScreen());
   }
 }
 
-void handleKeyPress(LogicalKeyboardKey key, WidgetRef ref) {
+void handleKeyPress(BuildContext context, LogicalKeyboardKey key, WidgetRef ref) {
+
+  final currentWordLength = ref.watch(textInputProvider).currentWord.length;
 
   if (key == LogicalKeyboardKey.enter) {
+    if (currentWordLength < 5) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Invalid Word"),
+          content: const Text("Word must be exactly 5 characters long!"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Close the dialog
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     ref.read(textInputProvider.notifier).enterChar(ref);
     print("Enter");
+    final userWords = ref.watch(textInputProvider).userWords;
+    print("userWords $userWords");
+
+
   } else if (key == LogicalKeyboardKey.backspace) {
     ref.read(textInputProvider.notifier).removeChar();
     print("Back");
@@ -34,6 +56,7 @@ void handleKeyPress(LogicalKeyboardKey key, WidgetRef ref) {
     // Handle character input
     final char = key.keyLabel.toUpperCase();
     ref.read(textInputProvider.notifier).addChar(char);
-    print(char);
+    print("Physical Keyboard $char");
   }
 }
+

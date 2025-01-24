@@ -9,34 +9,12 @@ import 'package:otp_boxes/provider/theme_provider.dart';
 import 'package:otp_boxes/themes/themes.dart';
 
 class KeyboardWidget extends ConsumerWidget {
-  final FocusNode _focusNode;
 
-  KeyboardWidget({Key? key})
-      : _focusNode = FocusNode(),
-        super(key: key);
+  const KeyboardWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return KeyboardListener(
-        focusNode: _focusNode,
-    autofocus: true,
-    onKeyEvent: (KeyEvent event) {
-          if(event is KeyDownEvent)
-            {
-              final logicalKey = event.logicalKey;
-              if (logicalKey == LogicalKeyboardKey.enter) {
-                ref.read(textInputProvider.notifier).enterChar(ref);
-                _focusNode.nextFocus();
-              } else if (logicalKey == LogicalKeyboardKey.backspace) {
-                ref.read(textInputProvider.notifier).removeChar();
-              } else if (logicalKey.keyLabel.length == 1 &&
-                  RegExp(r'[A-Za-z]').hasMatch(logicalKey.keyLabel)) {
-                ref.read(textInputProvider.notifier).addChar(logicalKey.keyLabel.toUpperCase());
-                _focusNode.nextFocus();
-              }
-            }
-    },
-    child: allLetters(ref));
+    return allLetters(ref);
   }
 }
 

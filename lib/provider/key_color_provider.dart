@@ -8,6 +8,10 @@ class KeyColorNotifier extends StateNotifier<Map<String, TileType>>{
   {
     state = {...state, key:validate};
   }
+  void resetColors()
+  {
+    state = {};
+  }
 
 }
 
