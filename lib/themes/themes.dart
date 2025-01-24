@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:otp_boxes/constants/colors.dart';
 
 final ThemeData lightTheme = ThemeData(
+    primaryColor: Colors.black,
     primaryColorLight: lightThemeLightShade,
     primaryColorDark: lightThemeDarkShade,
     useMaterial3: true,
@@ -18,6 +19,7 @@ final ThemeData lightTheme = ThemeData(
 
 
 final ThemeData darkTheme = ThemeData(
+    primaryColor: Colors.white,
     primaryColorLight: darkThemeLightShade,
     primaryColorDark: darkThemeDarkShade,
     appBarTheme: const AppBarTheme(

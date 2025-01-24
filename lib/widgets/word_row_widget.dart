@@ -30,7 +30,7 @@ class WordRowWidget extends ConsumerWidget {
 
         final controller = TextEditingController(text: letter);
 
-        return InputBoxWidget(controller: controller,validate: validation,);
+        return InputBoxWidget(controller: controller,validate: validation, focusNode: FocusNode(),);
       }),
     );
   }

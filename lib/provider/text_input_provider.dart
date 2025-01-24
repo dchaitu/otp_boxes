@@ -66,7 +66,6 @@ class WordCheck {
 }
 
 class TextInputNotifier extends StateNotifier<WordCheck> {
-  final TextEditingController controller = TextEditingController();
 
   TextInputNotifier({wordCheck}) : super(wordCheck);
 
@@ -79,7 +78,6 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
             ...state.tilesEntered,
             Tile(letter: letter, validate: TileType.notAnswered)
           ]);
-      controller.text = state.currentWord;
       print(letter);
 
     }
@@ -94,7 +92,6 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
           tilesEntered: [
             ...state.tilesEntered.sublist(0, state.tilesEntered.length - 1)
           ]);
-      controller.text = state.currentWord;
     }
   }
 
@@ -114,6 +111,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
 
         for (int i = state.currentRow * 5; i < state.currentRow * 5 + 5; i++) {
           state.tilesEntered[i].validate = TileType.correctPosition;
+          state.tilesEntered[i].shouldRotate = true;
         }
 
         state = state.copyWith(
@@ -134,6 +132,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
             remainingCorrect.remove(state.currentWord[i]);
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.correctPosition;
+            state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             state.keyColors[state.currentWord[i]] = TileType.correctPosition;
 
           }
@@ -147,17 +146,19 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
             }
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.correctPosition;
+            state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             state.keyColors[state.currentWord[i]] = TileType.correctPosition;
           } else if (remainingCorrect.contains(state.currentWord[i])) {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.present;
+            state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             // state.keyColors[state.currentWord[i]] = TileValidate.present;
             ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.present);
 
           } else {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.notPresent;
-            // state.keyColors[state.currentWord[i]] = TileValidate.notPresent;
+            state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.notPresent);
 
           }
@@ -178,7 +179,6 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
       print("Word is not completed");
       state = state.copyWith(isWordEntered: false);
     }
-    controller.clear();
     state = state.copyWith(
       currentWord: '',
       keyColors: {...state.keyColors},

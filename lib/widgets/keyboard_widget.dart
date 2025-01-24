@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/key_colors.dart';
 import 'package:otp_boxes/constants/enum.dart';
@@ -8,13 +9,34 @@ import 'package:otp_boxes/provider/theme_provider.dart';
 import 'package:otp_boxes/themes/themes.dart';
 
 class KeyboardWidget extends ConsumerWidget {
-  const KeyboardWidget({
-    super.key,
-  });
+  final FocusNode _focusNode;
+
+  KeyboardWidget({Key? key})
+      : _focusNode = FocusNode(),
+        super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return allLetters(ref);
+    return KeyboardListener(
+        focusNode: _focusNode,
+    autofocus: true,
+    onKeyEvent: (KeyEvent event) {
+          if(event is KeyDownEvent)
+            {
+              final logicalKey = event.logicalKey;
+              if (logicalKey == LogicalKeyboardKey.enter) {
+                ref.read(textInputProvider.notifier).enterChar(ref);
+                _focusNode.nextFocus();
+              } else if (logicalKey == LogicalKeyboardKey.backspace) {
+                ref.read(textInputProvider.notifier).removeChar();
+              } else if (logicalKey.keyLabel.length == 1 &&
+                  RegExp(r'[A-Za-z]').hasMatch(logicalKey.keyLabel)) {
+                ref.read(textInputProvider.notifier).addChar(logicalKey.keyLabel.toUpperCase());
+                _focusNode.nextFocus();
+              }
+            }
+    },
+    child: allLetters(ref));
   }
 }
 

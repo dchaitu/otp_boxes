@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/provider/theme_provider.dart';
-import 'package:otp_boxes/themes/themes.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -27,14 +26,12 @@ class SettingsScreen extends ConsumerWidget {
         padding: EdgeInsets.all(8.0),
         child: Column(
           children: [
-            SwitchListTile(title: Text("Hard Mode"), subtitle: Text('Any revealed hints must be used in subsequent guesses'), value: true, onChanged: (bool value) {  },),
+            SwitchListTile(title: Text("Hard Mode",style: Theme.of(context).textTheme.bodyMedium,), subtitle: Text('Any revealed hints must be used in subsequent guesses',style: Theme.of(context).textTheme.bodyMedium), value: true, onChanged: (bool value) {  },),
             Divider(thickness: 1.2,),
             SwitchListTile(
                 title: Text(
                   "Dark Theme",
-                  style: isDarkTheme
-                      ? darkTheme.appBarTheme.titleTextStyle
-                  :lightTheme.appBarTheme.titleTextStyle,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 value: isDarkTheme,
                 onChanged: (value) {
