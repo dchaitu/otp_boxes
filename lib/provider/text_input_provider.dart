@@ -38,7 +38,7 @@ class WordCheck {
       bool? isWon,
       int? currentRow,
       List<Tile>? tilesEntered,
-        Map<String, TileType>? keyColors}) {
+      Map<String, TileType>? keyColors}) {
     return WordCheck(
         userWords: userWords ?? this.userWords,
         actualWord: actualWord ?? this.actualWord,
@@ -48,17 +48,16 @@ class WordCheck {
         isWon: isWon ?? this.isWon,
         currentRow: currentRow ?? this.currentRow,
         tilesEntered: tilesEntered ?? this.tilesEntered,
-        keyColors:keyColors?? this.keyColors
-    );
+        keyColors: keyColors ?? this.keyColors);
   }
 }
 
 class TextInputNotifier extends StateNotifier<WordCheck> {
-
   TextInputNotifier({wordCheck}) : super(wordCheck);
 
   void addChar(String letter) {
     if (state.currentWord.length < 5) {
+      print(state.currentWord);
       state = state.copyWith(
           currentWord: state.currentWord + letter,
           tilesEntered: [
@@ -79,20 +78,15 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
     }
   }
 
-  void userWon() {
-    state = state.copyWith(isWon: true);
-  }
-
   void enterChar(WidgetRef ref) {
     if (state.currentWord.length == 5 && state.noOfChances > 0) {
       List remainingCorrect = state.actualWord.characters.toList();
       if (state.actualWord == state.currentWord) {
-        userWon();
-        for(int i=0;i<5;i++)
-          {
-            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.correctPosition);
-
-          }
+        for (int i = 0; i < 5; i++) {
+          ref
+              .read(keyColorProvider.notifier)
+              .updateKeyColor(state.currentWord[i], TileType.correctPosition);
+        }
 
         for (int i = state.currentRow * 5; i < state.currentRow * 5 + 5; i++) {
           state.tilesEntered[i].validate = TileType.correctPosition;
@@ -100,50 +94,52 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
         }
 
         state = state.copyWith(
-          isWordEntered: true,
-          userWords: [...state.userWords, state.currentWord],
-          currentWord: '',
-          noOfChances: state.noOfChances - 1,
-          currentRow: state.currentRow + 1,
-          isWon: true,
-          keyColors: {...state.keyColors}
-        );
+            isWordEntered: true,
+            userWords: [...state.userWords, state.currentWord],
+            currentWord: '',
+            noOfChances: state.noOfChances - 1,
+            currentRow: state.currentRow + 1,
+            isWon: true,
+            keyColors: {...state.keyColors});
         print("Word is ${state.userWords}");
       } else {
         for (int i = 0; i < 5; i++) {
           if (state.currentWord[i] == state.actualWord[i]) {
-            remainingCorrect.remove(state.currentWord[i]);
+            // matching other tiles are in correctPosition
+
+            // adding color to the keyboard tile and boxColor
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.correctPosition;
-            state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             state.keyColors[state.currentWord[i]] = TileType.correctPosition;
-
           }
         }
         for (int i = 0; i < 5; i++) {
           if (state.currentWord[i] == state.actualWord[i]) {
             {
+              // removing matched keys so they won't overlap with present keys.
               remainingCorrect.remove(state.currentWord[i]);
-              ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.correctPosition);
-
+              ref.read(keyColorProvider.notifier).updateKeyColor(
+                  state.currentWord[i], TileType.correctPosition);
             }
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.correctPosition;
-            state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             state.keyColors[state.currentWord[i]] = TileType.correctPosition;
           } else if (remainingCorrect.contains(state.currentWord[i])) {
+
+            // adding color to the keyboard tile and boxColor
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.present;
-            state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
-            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.present);
-
+            ref.read(keyColorProvider.notifier)
+                .updateKeyColor(state.currentWord[i], TileType.present);
           } else {
+
+            // adding color to the keyboard tile and boxColor
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.notPresent;
-            state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
-            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.notPresent);
-
+            ref.read(keyColorProvider.notifier)
+                .updateKeyColor(state.currentWord[i], TileType.notPresent);
           }
+          state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
         }
 
         state = state.copyWith(
@@ -169,19 +165,18 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
     final data = ref.watch(getWordFromWordsProvider);
     ref.read(keyColorProvider.notifier).resetColors();
     state = state.copyWith(
-      userWords: [],
-      actualWord: data.when(
-          data: (data) => data,
-          error: (error, s) => "ERROR",
-          loading: () => "loading..."),
-      currentWord: '',
-      isWon: false,
-      isWordEntered: false,
-      noOfChances: 6,
-      currentRow: 0,
-      tilesEntered: [],
-      keyColors: keyColorsMap
-    );
+        userWords: [],
+        actualWord: data.when(
+            data: (data) => data,
+            error: (error, s) => "ERROR",
+            loading: () => "loading..."),
+        currentWord: '',
+        isWon: false,
+        isWordEntered: false,
+        noOfChances: 6,
+        currentRow: 0,
+        tilesEntered: [],
+        keyColors: keyColorsMap);
   }
 }
 
@@ -205,4 +200,3 @@ final textInputProvider =
         keyColors: keyColorsMap),
   );
 });
-
