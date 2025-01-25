@@ -5,44 +5,47 @@ import 'package:flutter/material.dart';
 class RotatingTileWidget extends StatefulWidget {
   final Widget child;
   final bool shouldRotate;
+  final Duration duration;
+  final double delay;
 
   const RotatingTileWidget({
     Key? key,
     required this.child,
     required this.shouldRotate,
+    required this.duration,
+    required this.delay
   }) : super(key: key);
 
   @override
-  State<RotatingTileWidget> createState() => _RotatingTileWidgetState();
+  _RotatingTileWidgetState createState() => _RotatingTileWidgetState();
 }
 
 class _RotatingTileWidgetState extends State<RotatingTileWidget>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1000), // Adjust duration
+      duration: widget.duration, // Use passed duration
       vsync: this,
-    );
-
-    _animation = Tween<double>(begin: 0, end: 0.5).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
 
+  late final Animation<double> _animation = Tween<double>(begin: 0, end: 1).animate(
+    CurvedAnimation(parent: _controller, curve: Interval(
+        0, 1, curve:Curves.easeInOut
+    ),
+    ),
+  );
+
   @override
-  void didUpdateWidget(covariant RotatingTileWidget oldWidget) {
+  void didUpdateWidget(RotatingTileWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Trigger rotation if `shouldRotate` is true
     if (widget.shouldRotate && !_controller.isAnimating) {
-      _controller.forward().then((_) {
-        _controller.reverse(); // Optional: reverse the animation
-      });
+      _controller.forward();
     }
   }
 
@@ -57,17 +60,11 @@ class _RotatingTileWidgetState extends State<RotatingTileWidget>
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
-        double flip =0;
-        if(_animation.value>0.50){
-          flip = pi;
-        }
-
+        final double flipValue = (_animation.value > 0.5) ? pi : 0;
         return Transform(
           transform: Matrix4.identity()
-          ..setEntry(3, 2, 0.003)
-          ..rotateX(_animation.value *pi)
-          ..rotateX(flip),
-
+            ..setEntry(3, 2, 0.003) // Perspective effect
+            ..rotateX(_animation.value * pi + flipValue),
           alignment: Alignment.center,
           child: widget.child,
         );

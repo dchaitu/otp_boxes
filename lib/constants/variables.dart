@@ -1,2 +1,2 @@
-const int wordLength = 5;
-const int noOfChances = 6;
+const int EACH_WORD_LENGTH = 5;
+const int CHANCES = 6;

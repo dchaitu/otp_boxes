@@ -52,7 +52,7 @@ void handleKeyPress(BuildContext context, LogicalKeyboardKey key, WidgetRef ref)
     ref.read(textInputProvider.notifier).removeChar();
     print("Back");
   }
-  else if (key.keyLabel.isNotEmpty && key.keyLabel.length == 1) {
+  else if (key.keyLabel.isNotEmpty && key.keyLabel.length == 1 && RegExp(r'^[A-Z]$').hasMatch(key.keyLabel)) {
     // Handle character input
     final char = key.keyLabel.toUpperCase();
     ref.read(textInputProvider.notifier).addChar(char);

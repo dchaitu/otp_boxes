@@ -96,7 +96,12 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
 
         for (int i = state.currentRow * 5; i < state.currentRow * 5 + 5; i++) {
           state.tilesEntered[i].validate = TileType.correctPosition;
-          state.tilesEntered[i].shouldRotate = true;
+          print("state.tilesEntered[i] ${state.tilesEntered[i]}");
+          if(state.currentRow!=0)
+            {
+              state.tilesEntered[i].shouldRotate = false;
+            }
+          state.tilesEntered[i+ (state.currentRow * 5)].shouldRotate = true;
         }
 
         state = state.copyWith(
@@ -129,17 +134,29 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
             }
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.correctPosition;
+            if(state.currentRow>0)
+            {
+              state.tilesEntered[i+ (state.currentRow * 5)].shouldRotate = false;
+            }
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             state.keyColors[state.currentWord[i]] = TileType.correctPosition;
           } else if (remainingCorrect.contains(state.currentWord[i])) {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.present;
+            if(state.currentRow>0)
+            {
+              state.tilesEntered[i+ (state.currentRow * 5)].shouldRotate = false;
+            }
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.present);
 
           } else {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.notPresent;
+            if(state.currentRow>0)
+            {
+              state.tilesEntered[i+ (state.currentRow * 5)].shouldRotate = false;
+            }
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
             ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.notPresent);
 

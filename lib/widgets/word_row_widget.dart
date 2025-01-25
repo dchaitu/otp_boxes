@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/enum.dart';
+import 'package:otp_boxes/constants/variables.dart';
 import 'package:otp_boxes/widgets/input_box_widget.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
+import 'package:otp_boxes/widgets/rotating_tile_widget.dart';
 
 class WordRowWidget extends ConsumerWidget {
   final int wordLength;
   final int rowIndex;
 
-  const WordRowWidget({super.key, this.wordLength = 5, required this.rowIndex});
+  const WordRowWidget({super.key, this.wordLength = EACH_WORD_LENGTH, required this.rowIndex});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,10 +29,20 @@ class WordRowWidget extends ConsumerWidget {
         final validation = tileIndex < state.tilesEntered.length
             ? state.tilesEntered[tileIndex].validate
             : TileType.notAnswered;
+        print("state.tilesEntered.length ${state.tilesEntered.length}");
+        print("tileIndex:- $tileIndex, ");
+        final shouldRotate = tileIndex < state.tilesEntered.length
+            ? state.tilesEntered[tileIndex].shouldRotate
+            : false;
 
         final controller = TextEditingController(text: letter);
 
-        return InputBoxWidget(controller: controller,validate: validation, focusNode: FocusNode(),);
+
+          return RotatingTileWidget(
+            shouldRotate: shouldRotate,
+            duration: Duration(milliseconds: 1000*(index+1)),
+            delay: index.toDouble(),
+            child: InputBoxWidget(controller: controller,validate: validation, focusNode: FocusNode(),));
       }),
     );
   }

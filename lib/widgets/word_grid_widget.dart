@@ -9,6 +9,8 @@ class WordGridWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
     final rows = List.generate(
       noOfChances,
       (index) => WordRowWidget(
