@@ -84,7 +84,6 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
   }
 
   void enterChar(WidgetRef ref) {
-    const flipAnimationDuration = Duration(milliseconds: 1000);
     if (state.currentWord.length == 5 && state.noOfChances > 0) {
       List remainingCorrect = state.actualWord.characters.toList();
 
@@ -96,13 +95,11 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
           state.tilesEntered[i].shouldRotate = true;
         }
 
-        Future.delayed(flipAnimationDuration, () {
           for (int i = 0; i < 5; i++) {
             ref
                 .read(keyColorProvider.notifier)
                 .updateKeyColor(state.currentWord[i], TileType.correctPosition);
           }
-        });
 
         state = state.copyWith(
           isWordEntered: true,
@@ -125,12 +122,9 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
           if (state.currentWord[i] == state.actualWord[i]) {
             remainingCorrect.remove(state.currentWord[i]);
 
-            // Delay key color updates until after the flip animation
-            Future.delayed(flipAnimationDuration, () {
-              ref
-                  .read(keyColorProvider.notifier)
+              ref.read(keyColorProvider.notifier)
                   .updateKeyColor(state.currentWord[i], TileType.correctPosition);
-            });
+
 
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.correctPosition;

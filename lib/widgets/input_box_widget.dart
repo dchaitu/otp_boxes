@@ -24,7 +24,7 @@ class InputBoxWidget extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: flipValue > 0.5 ? getBackgroundColor(validate) : Colors.transparent,
-        border: Border.all(width: 2, color: Colors.grey),
+        border: flipValue < 0.5 ?Border.all(width: 2, color: Colors.grey): Border.all(width: 0),
       ),
       height: 64,
       width: 64,
