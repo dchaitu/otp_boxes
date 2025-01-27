@@ -84,25 +84,25 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
   }
 
   void enterChar(WidgetRef ref) {
+    const flipAnimationDuration = Duration(milliseconds: 1000);
     if (state.currentWord.length == 5 && state.noOfChances > 0) {
       List remainingCorrect = state.actualWord.characters.toList();
+
       if (state.actualWord == state.currentWord) {
         userWon();
-        for(int i=0;i<5;i++)
-          {
-            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.correctPosition);
 
-          }
 
         for (int i = state.currentRow * 5; i < state.currentRow * 5 + 5; i++) {
-          state.tilesEntered[i].validate = TileType.correctPosition;
-          print("state.tilesEntered[i] ${state.tilesEntered[i]}");
-          if(state.currentRow!=0)
-            {
-              state.tilesEntered[i].shouldRotate = false;
-            }
-          state.tilesEntered[i+ (state.currentRow * 5)].shouldRotate = true;
+          state.tilesEntered[i].shouldRotate = true;
         }
+
+        Future.delayed(flipAnimationDuration, () {
+          for (int i = 0; i < 5; i++) {
+            ref
+                .read(keyColorProvider.notifier)
+                .updateKeyColor(state.currentWord[i], TileType.correctPosition);
+          }
+        });
 
         state = state.copyWith(
           isWordEntered: true,
@@ -111,9 +111,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
           noOfChances: state.noOfChances - 1,
           currentRow: state.currentRow + 1,
           isWon: true,
-          keyColors: {...state.keyColors}
         );
-        print("Word is ${state.userWords}");
       } else {
         for (int i = 0; i < 5; i++) {
           if (state.currentWord[i] == state.actualWord[i]) {
@@ -121,44 +119,31 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.correctPosition;
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
-            state.keyColors[state.currentWord[i]] = TileType.correctPosition;
-
           }
         }
         for (int i = 0; i < 5; i++) {
           if (state.currentWord[i] == state.actualWord[i]) {
-            {
-              remainingCorrect.remove(state.currentWord[i]);
-              ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.correctPosition);
+            remainingCorrect.remove(state.currentWord[i]);
 
-            }
+            // Delay key color updates until after the flip animation
+            Future.delayed(flipAnimationDuration, () {
+              ref
+                  .read(keyColorProvider.notifier)
+                  .updateKeyColor(state.currentWord[i], TileType.correctPosition);
+            });
+
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.correctPosition;
-            if(state.currentRow>0)
-            {
-              state.tilesEntered[i+ (state.currentRow * 5)].shouldRotate = false;
-            }
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
-            state.keyColors[state.currentWord[i]] = TileType.correctPosition;
           } else if (remainingCorrect.contains(state.currentWord[i])) {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.present;
-            if(state.currentRow>0)
-            {
-              state.tilesEntered[i+ (state.currentRow * 5)].shouldRotate = false;
-            }
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
-            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.present);
 
           } else {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.notPresent;
-            if(state.currentRow>0)
-            {
-              state.tilesEntered[i+ (state.currentRow * 5)].shouldRotate = false;
-            }
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
-            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.notPresent);
 
           }
         }
@@ -173,9 +158,9 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
       }
     } else {
       print("Word is not completed");
-
       state = state.copyWith(isWordEntered: false);
     }
+
     state = state.copyWith(
       currentWord: '',
       keyColors: {...state.keyColors},

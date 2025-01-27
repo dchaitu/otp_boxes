@@ -3,17 +3,17 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class RotatingTileWidget extends StatefulWidget {
-  final Widget child;
+  final Widget Function(double flipValue) childBuilder;
   final bool shouldRotate;
   final Duration duration;
   final double delay;
 
   const RotatingTileWidget({
     Key? key,
-    required this.child,
+    required this.childBuilder, // Update to use the builder function
     required this.shouldRotate,
     required this.duration,
-    required this.delay
+    required this.delay,
   }) : super(key: key);
 
   @override
@@ -28,15 +28,14 @@ class _RotatingTileWidgetState extends State<RotatingTileWidget>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: widget.duration, // Use passed duration
+      duration: widget.duration,
       vsync: this,
     );
   }
 
   late final Animation<double> _animation = Tween<double>(begin: 0, end: 1).animate(
-    CurvedAnimation(parent: _controller, curve: Interval(
-        0, 1, curve:Curves.easeInOut
-    ),
+    CurvedAnimation(parent: _controller, curve: const Interval(
+        0, 1, curve: Curves.easeInOut),
     ),
   );
 
@@ -66,7 +65,7 @@ class _RotatingTileWidgetState extends State<RotatingTileWidget>
             ..setEntry(3, 2, 0.003) // Perspective effect
             ..rotateX(_animation.value * pi + flipValue),
           alignment: Alignment.center,
-          child: widget.child,
+          child: widget.childBuilder(_animation.value), // Pass `flipValue` to the builder
         );
       },
     );

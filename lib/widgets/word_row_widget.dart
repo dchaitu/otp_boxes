@@ -40,9 +40,16 @@ class WordRowWidget extends ConsumerWidget {
 
           return RotatingTileWidget(
             shouldRotate: shouldRotate,
-            duration: Duration(milliseconds: 1000*(index+1)),
+            duration: Duration(milliseconds: 500*(index-state.currentRow+1) ),
             delay: index.toDouble(),
-            child: InputBoxWidget(controller: controller,validate: validation, focusNode: FocusNode(),));
+            childBuilder: (double flipValue) {
+              return InputBoxWidget(
+                  controller: controller,
+                  validate: validation,
+                  focusNode: FocusNode(),
+              flipValue: flipValue);
+            },
+          );
       }),
     );
   }

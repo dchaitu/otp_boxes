@@ -8,12 +8,13 @@ class InputBoxWidget extends StatelessWidget {
   final TextEditingController controller;
   final TileType validate;
   final FocusNode focusNode;
+  final double flipValue;
 
   const InputBoxWidget({
     super.key,
     required this.controller,
     required this.focusNode,
-    this.validate = TileType.notAnswered,
+    this.validate = TileType.notAnswered, required this.flipValue,
   });
 
   @override
@@ -22,7 +23,7 @@ class InputBoxWidget extends StatelessWidget {
       margin: const EdgeInsets.all(4),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: getBackgroundColor(validate),
+        color: flipValue > 0.5 ? getBackgroundColor(validate) : Colors.transparent,
         border: Border.all(width: 2, color: Colors.grey),
       ),
       height: 64,
@@ -45,3 +46,4 @@ class InputBoxWidget extends StatelessWidget {
     );
   }
 }
+
