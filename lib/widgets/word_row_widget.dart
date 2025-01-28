@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/animations/bounce_widget.dart';
 import 'package:otp_boxes/constants/enum.dart';
 import 'package:otp_boxes/constants/variables.dart';
 import 'package:otp_boxes/widgets/input_box_widget.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
-import 'package:otp_boxes/widgets/rotating_tile_widget.dart';
+import 'package:otp_boxes/animations/rotating_tile_widget.dart';
 
 class WordRowWidget extends ConsumerWidget {
   final int wordLength;
@@ -36,18 +37,22 @@ class WordRowWidget extends ConsumerWidget {
             : false;
 
         final controller = TextEditingController(text: letter);
+        final bounce = tileIndex == state.tilesEntered.length - 1;
 
 
           return RotatingTileWidget(
             shouldRotate: shouldRotate,
-            duration: Duration(milliseconds: 500*(index-state.currentRow+1) ),
+            duration: Duration(milliseconds: 300*(index-state.currentRow+1) ),
             delay: index.toDouble(),
             childBuilder: (double flipValue) {
-              return InputBoxWidget(
-                  controller: controller,
-                  validate: validation,
-                  focusNode: FocusNode(),
-              flipValue: flipValue);
+              return BounceWidget(
+                bounce: bounce,
+                child: InputBoxWidget(
+                    controller: controller,
+                    validate: validation,
+                    focusNode: FocusNode(),
+                flipValue: flipValue),
+              );
             },
           );
       }),

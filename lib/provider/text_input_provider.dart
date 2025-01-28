@@ -17,6 +17,7 @@ class WordCheck {
   int currentRow;
   List<Tile> tilesEntered;
   Map<String, TileType> keyColors;
+  bool backBounce = false;
 
   WordCheck(
       {required this.userWords,
@@ -27,7 +28,8 @@ class WordCheck {
       required this.isWon,
       required this.currentRow,
       required this.tilesEntered,
-      required this.keyColors});
+      required this.keyColors,
+      required this.backBounce});
 
   WordCheck copyWith(
       {List<String>? userWords,
@@ -38,7 +40,8 @@ class WordCheck {
       bool? isWon,
       int? currentRow,
       List<Tile>? tilesEntered,
-        Map<String, TileType>? keyColors}) {
+        Map<String, TileType>? keyColors,
+      bool? backBounce}) {
     return WordCheck(
         userWords: userWords ?? this.userWords,
         actualWord: actualWord ?? this.actualWord,
@@ -48,7 +51,8 @@ class WordCheck {
         isWon: isWon ?? this.isWon,
         currentRow: currentRow ?? this.currentRow,
         tilesEntered: tilesEntered ?? this.tilesEntered,
-        keyColors:keyColors?? this.keyColors
+        keyColors:keyColors?? this.keyColors,
+        backBounce:backBounce?? this.backBounce
     );
   }
 }
@@ -133,12 +137,13 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.present;
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
+            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.present);
 
           } else {
             state.tilesEntered[i + (state.currentRow * 5)].validate =
                 TileType.notPresent;
             state.tilesEntered[i + (state.currentRow * 5)].shouldRotate = true;
-
+            ref.read(keyColorProvider.notifier).updateKeyColor(state.currentWord[i], TileType.notPresent);
           }
         }
 
@@ -176,10 +181,17 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
       noOfChances: 6,
       currentRow: 0,
       tilesEntered: [],
-      keyColors: keyColorsMap
+      keyColors: keyColorsMap,
+        backBounce:false
     );
   }
+
+  void addBackBounce() {
+    state = state.copyWith(backBounce: true);
+  }
+
 }
+
 
 final textInputProvider =
     StateNotifierProvider<TextInputNotifier, WordCheck>((ref) {
@@ -198,7 +210,8 @@ final textInputProvider =
         noOfChances: 6,
         currentRow: 0,
         tilesEntered: [],
-        keyColors: keyColorsMap),
+        keyColors: keyColorsMap,
+        backBounce:false),
   );
 });
 

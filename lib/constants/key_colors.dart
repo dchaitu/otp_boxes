@@ -19,16 +19,13 @@ Map<TileType,Color> getColorFromTile = {
 };
 
 
-getBackgroundColor(tileType) {
+Color getBackgroundColor(tileType) {
   switch (tileType) {
     case TileType.correctPosition:
       return correctGreen;
     case TileType.present:
-      Future.delayed(const Duration(milliseconds: 5000));
-
       return containsYellow;
     case TileType.notPresent:
-      Future.delayed(const Duration(milliseconds: 5000));
       return notPresentGrey;
     default:
       return Colors.black12;
