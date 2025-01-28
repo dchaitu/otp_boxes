@@ -43,7 +43,9 @@ class _DanceAnimationState extends State<DanceAnimation>
     if(widget.isDancing)
       {
         Future.delayed(Duration(milliseconds: widget.delay), () {
-          _animationController.forward();
+          if(mounted) {
+            _animationController.forward();
+          }
 
         });
       }

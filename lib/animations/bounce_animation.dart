@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class BounceAnimation extends StatefulWidget {
   final Widget child;
-  final bool bounce;
+  final bool isBouncing;
 
-  const BounceAnimation({super.key, required this.child, required this.bounce});
+  const BounceAnimation({super.key, required this.child, required this.isBouncing});
 
   @override
   State<BounceAnimation> createState() => _BounceAnimationState();
@@ -35,7 +35,7 @@ class _BounceAnimationState extends State<BounceAnimation>
 
   @override
   void didUpdateWidget(covariant BounceAnimation oldWidget) {
-    if (widget.bounce) {
+    if (widget.isBouncing && mounted) {
       _animationController.reset();
       _animationController.forward();
     }

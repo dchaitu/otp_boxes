@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/constants/colors.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
 import 'package:otp_boxes/screens/game_screen.dart';
 
@@ -53,17 +54,28 @@ class StatsDialog extends ConsumerWidget {
             ),
           ),
           Expanded(
-              child: ElevatedButton(
-                  onPressed: () {
-                    // resetGameState
-                    ref.read(textInputProvider.notifier).resetGameState(ref);
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const GameScreen()),
-                        (route) => false);
-                  },
-                  child: const Text('Replay')))
+            child: ElevatedButton(
+              onPressed: () {
+                // resetGameState
+                ref.read(textInputProvider.notifier).resetGameState(ref);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const GameScreen()),
+                    (route) => false);
+              },
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(correctGreen),
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                  const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                ),),
+              child: Text(
+                'Replay',
+                style: Theme.of(context).appBarTheme.titleTextStyle,
+              ),
+            ),
+          )
         ],
       ),
     );
