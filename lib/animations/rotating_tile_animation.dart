@@ -2,25 +2,25 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class RotatingTileWidget extends StatefulWidget {
+class RotatingTileAnimation extends StatefulWidget {
   final Widget Function(double flipValue) childBuilder;
   final bool shouldRotate;
   final Duration duration;
   final double delay;
 
-  const RotatingTileWidget({
-    Key? key,
+  const RotatingTileAnimation({
+    super.key,
     required this.childBuilder, // Update to use the builder function
     required this.shouldRotate,
     required this.duration,
     required this.delay,
-  }) : super(key: key);
+  });
 
   @override
-  _RotatingTileWidgetState createState() => _RotatingTileWidgetState();
+  _RotatingTileAnimationState createState() => _RotatingTileAnimationState();
 }
 
-class _RotatingTileWidgetState extends State<RotatingTileWidget>
+class _RotatingTileAnimationState extends State<RotatingTileAnimation>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
@@ -33,14 +33,16 @@ class _RotatingTileWidgetState extends State<RotatingTileWidget>
     );
   }
 
-  late final Animation<double> _animation = Tween<double>(begin: 0, end: 1).animate(
-    CurvedAnimation(parent: _controller, curve: const Interval(
-        0, 1, curve: Curves.easeInOut),
+  late final Animation<double> _animation =
+      Tween<double>(begin: 0, end: 1).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0, 1, curve: Curves.easeInOut),
     ),
   );
 
   @override
-  void didUpdateWidget(RotatingTileWidget oldWidget) {
+  void didUpdateWidget(RotatingTileAnimation oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.shouldRotate && !_controller.isAnimating) {
@@ -65,7 +67,8 @@ class _RotatingTileWidgetState extends State<RotatingTileWidget>
             ..setEntry(3, 2, 0.003) // Perspective effect
             ..rotateX(_animation.value * pi + flipValue),
           alignment: Alignment.center,
-          child: widget.childBuilder(_animation.value), // Pass `flipValue` to the builder
+          child: widget.childBuilder(
+              _animation.value), // Pass `flipValue` to the builder
         );
       },
     );

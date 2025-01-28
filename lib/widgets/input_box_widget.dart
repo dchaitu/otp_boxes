@@ -14,7 +14,8 @@ class InputBoxWidget extends StatelessWidget {
     super.key,
     required this.controller,
     required this.focusNode,
-    this.validate = TileType.notAnswered, required this.flipValue,
+    required this.flipValue,
+    this.validate = TileType.notAnswered,
   });
 
   @override

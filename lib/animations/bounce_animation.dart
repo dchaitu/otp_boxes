@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class BounceWidget extends StatefulWidget {
+class BounceAnimation extends StatefulWidget {
   final Widget child;
   final bool bounce;
 
-  const BounceWidget({super.key, required this.child, required this.bounce});
+  const BounceAnimation({super.key, required this.child, required this.bounce});
 
   @override
-  State<BounceWidget> createState() => _BounceWidgetState();
+  State<BounceAnimation> createState() => _BounceAnimationState();
 }
 
-class _BounceWidgetState extends State<BounceWidget>
+class _BounceAnimationState extends State<BounceAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -34,7 +34,7 @@ class _BounceWidgetState extends State<BounceWidget>
   }
 
   @override
-  void didUpdateWidget(covariant BounceWidget oldWidget) {
+  void didUpdateWidget(covariant BounceAnimation oldWidget) {
     if (widget.bounce) {
       _animationController.reset();
       _animationController.forward();

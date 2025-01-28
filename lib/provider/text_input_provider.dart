@@ -92,18 +92,16 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
       List remainingCorrect = state.actualWord.characters.toList();
 
       if (state.actualWord == state.currentWord) {
-        userWon();
-
-
+        // Correct Answer
         for (int i = state.currentRow * 5; i < state.currentRow * 5 + 5; i++) {
           state.tilesEntered[i].shouldRotate = true;
         }
+        for(int i=0;i<5;i++) {
+          state.tilesEntered[i + (state.currentRow * 5)].validate =
+              TileType.correctPosition;
+        }
 
-          for (int i = 0; i < 5; i++) {
-            ref
-                .read(keyColorProvider.notifier)
-                .updateKeyColor(state.currentWord[i], TileType.correctPosition);
-          }
+        userWon();
 
         state = state.copyWith(
           isWordEntered: true,
