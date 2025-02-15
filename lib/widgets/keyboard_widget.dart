@@ -14,18 +14,21 @@ class KeyboardWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return allLetters(ref);
+
+    return allLetters(ref,context);
   }
 }
 
-Widget allLetters(WidgetRef ref) {
+Widget allLetters(WidgetRef ref, BuildContext context) {
   const List<String> allRows = [
     'Q W E R T Y U I O P',
     'A S D F G H J K L',
     'Enter Z X C V B N M Back',
   ];
+  final width = MediaQuery.of(context).size.width;
 
-  List<Row> keyboard = [];
+
+  List<Widget> keyboard = [];
   for (String row in allRows) {
     List<Widget> eachRow = [];
 
@@ -37,20 +40,28 @@ Widget allLetters(WidgetRef ref) {
         eachRow.add(keyBoardButton(
             key, () => ref.read(textInputProvider.notifier).removeChar(), ref));
       } else {
-        eachRow.add(keyBoardButton(
-            key, () => ref.read(textInputProvider.notifier).addChar(key), ref));
+        eachRow.add(Container(
+          child: keyBoardButton(
+              key, () => ref.read(textInputProvider.notifier).addChar(key), ref),
+        ));
       }
     }
 
-    keyboard.add(Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: eachRow,
+    keyboard.add(Expanded(
+      child: Row(
+        spacing:0,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: eachRow,
+      ),
     ));
   }
 
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.end,
-    children: keyboard,
+  return SizedBox(
+    width: width,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: keyboard,
+    ),
   );
 }
 
@@ -60,7 +71,12 @@ Widget keyWidget(
 
   final tileType = keyValidationStatus[letter] ?? TileType.notAnswered;
   final buttonColor = getColorFromTile[tileType];
-  const double marginSpace = 4.0;
+  int totalKeys = 10;  // Default key count for normal rows
+  if (letter == 'Enter' || letter == 'Back') {
+    totalKeys = 8;  // Adjust for rows with special keys
+  }
+
+  double marginSpace = totalKeys > 8 ? 0.5 : 3.0;
   const double circularRadius = 8;
   // print("buttonColor $buttonColor, tileType $tileType");
 
@@ -73,7 +89,7 @@ Widget keyWidget(
         color: buttonColor,
       ),
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.all(marginSpace),
+      margin: EdgeInsets.all(marginSpace),
       width: 40,
       height: 60,
       child: Center(child: childWidget),
@@ -87,7 +103,7 @@ Widget keyBoardButton(String letter, VoidCallback onTap, WidgetRef ref) {
 
   if (letter == 'Enter') {
     return SizedBox(
-      width: 80,
+      // width: 80,
       child: keyWidget(
           letter,
           onTap,
@@ -96,7 +112,7 @@ Widget keyBoardButton(String letter, VoidCallback onTap, WidgetRef ref) {
     );
   } else if (letter == 'Back') {
     return SizedBox(
-      width: 80,
+      // width: 80,
       child: keyWidget(
           letter,
           onTap,
