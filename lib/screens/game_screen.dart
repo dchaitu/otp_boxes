@@ -71,7 +71,7 @@ class GameScreen extends ConsumerWidget {
                   Divider(thickness: 2, height: 1),
                   SizedBox(height: 10),
                   WordGridWidget(),
-                  SizedBox(height: 10),
+                  Spacer(),
                   KeyboardWidget()
                 ],
               ),
