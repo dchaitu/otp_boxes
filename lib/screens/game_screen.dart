@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
 import 'package:otp_boxes/provider/theme_provider.dart';
 import 'package:otp_boxes/screens/settings_screen.dart';
@@ -9,14 +9,35 @@ import 'package:otp_boxes/themes/themes.dart';
 import 'package:otp_boxes/widgets/keyboard_widget.dart';
 import 'package:otp_boxes/widgets/word_grid_widget.dart';
 
-class GameScreen extends ConsumerWidget {
+class GameScreen extends ConsumerStatefulWidget {
   const GameScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _GameScreenState createState() => _GameScreenState();
+}
+
+class _GameScreenState extends ConsumerState<GameScreen> {
+
+  @override
+  void initState() {
+    ref.read(wordsFromAPIProvider).getWord();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isDarkTheme = ref.watch(themeProvider);
-    final bool isWonTextInput = ref.watch(textInputProvider).isWon;
-    final int noOfChances = ref.watch(textInputProvider).noOfChances;
+    final bool isWonTextInput = ref
+        .watch(textInputProvider)
+        .isWon;
+    final int noOfChances = ref
+        .watch(textInputProvider)
+        .noOfChances;
     print("noOfChances $noOfChances");
 
     return MaterialApp(
@@ -81,25 +102,26 @@ class GameScreen extends ConsumerWidget {
       ),
     );
   }
-}
 
-void handleCaseCorrect(BuildContext context) {
-  Future.delayed(const Duration(seconds: 2), () {
-    showDialog(context: context, builder: (context) => const StatsDialog());
-  });
-}
 
-void showPrompt(BuildContext context, String message) {
-  showDialog(
-      barrierDismissible: false,
-      barrierColor: Colors.transparent,
-      context: context,
-      builder: (context) {
-        Future.delayed(Duration(milliseconds: 1000), () {
-          Navigator.maybePop(context);
+  void handleCaseCorrect(BuildContext context) {
+    Future.delayed(const Duration(seconds: 2), () {
+      showDialog(context: context, builder: (context) => const StatsDialog());
+    });
+  }
+
+  void showPrompt(BuildContext context, String message) {
+    showDialog(
+        barrierDismissible: false,
+        barrierColor: Colors.transparent,
+        context: context,
+        builder: (context) {
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            Navigator.maybePop(context);
+          });
+          return AlertDialog(
+            title: Text(message, textAlign: TextAlign.center),
+          );
         });
-        return AlertDialog(
-          title: Text(message, textAlign: TextAlign.center),
-        );
-      });
+  }
 }

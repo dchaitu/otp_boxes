@@ -31,3 +31,18 @@ Color getBackgroundColor(tileType) {
       return Colors.black12;
   }
 }
+
+TileType getTileType(String letterType)
+{
+  switch (letterType) {
+    case "correctPosition":
+      return TileType.correctPosition;
+    case "present":
+      return TileType.present;
+    case "notPresent":
+      return TileType.notPresent;
+    default:
+      return TileType.notAnswered;
+  }
+
+}

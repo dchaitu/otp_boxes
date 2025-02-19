@@ -23,7 +23,9 @@ class KeyboardListenerWidget extends ConsumerWidget {
 
 void handleKeyPress(BuildContext context, LogicalKeyboardKey key, WidgetRef ref) {
 
-  final currentWordLength = ref.watch(textInputProvider).currentWord.length;
+  final textInputNotifier = ref.read(textInputProvider.notifier);
+  final currentWordLength = ref.read(textInputProvider).currentWord.length;
+
 
   if (key == LogicalKeyboardKey.enter) {
     if (currentWordLength < 5) {
@@ -42,10 +44,10 @@ void handleKeyPress(BuildContext context, LogicalKeyboardKey key, WidgetRef ref)
       );
       return;
     }
-    ref.read(textInputProvider.notifier).enterChar(ref);
-    print("Enter");
     final userWords = ref.watch(textInputProvider).userWords;
     print("userWords $userWords");
+    ref.read(textInputProvider.notifier).enterChar(ref);
+    print("Enter");
 
 
   } else if (key == LogicalKeyboardKey.backspace) {
@@ -55,7 +57,7 @@ void handleKeyPress(BuildContext context, LogicalKeyboardKey key, WidgetRef ref)
   else if (key.keyLabel.isNotEmpty && key.keyLabel.length == 1 && RegExp(r'^[A-Z]$').hasMatch(key.keyLabel)) {
     // Handle character input
     final char = key.keyLabel.toUpperCase();
-    ref.read(textInputProvider.notifier).addChar(char);
+    textInputNotifier.addChar(char);
     print("Physical Keyboard $char");
   }
 }

@@ -8,17 +8,36 @@ class ApiService {
   String wordUrl = 'http://127.0.0.1:8000/word/';
   String loginUrl = 'http://127.0.0.1:8000/login/';
   String signUpUrl = 'http://127.0.0.1:8000/signup/';
+  String guessedWordUrl = 'http://127.0.0.1:8000/guess/';
 
 
-  Future<String> getWord() async {
-    final response = await http.get(Uri.parse(wordUrl));
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      var word = jsonData['word'];
-      return word;
-    } else {
-      throw Exception(response.reasonPhrase);
+  Future<void> getWord() async {
+    await http.get(Uri.parse(wordUrl));
+
+  }
+
+  Future<Map<String, dynamic>?> storeCurrentWord(String username,String  currentWord) async
+  {
+    print("getCurrentWord $username, $currentWord");
+    try{
+      var response = await http.post(
+          Uri.parse(guessedWordUrl),
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: jsonEncode({"username": username, "content": currentWord}),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        print("Error: ${response.statusCode} - ${response.body}");
+      }
+    } catch (error) {
+      print("Exception: $error");
     }
+
+    return null;
   }
 
   Future<Login?> userLogin(String username, String password) async
@@ -60,6 +79,3 @@ class ApiService {
 
 final wordsFromAPIProvider = Provider<ApiService>((ref) => ApiService());
 
-final getWordFromWordsProvider = FutureProvider<String>((ref) async {
-  return ref.watch(wordsFromAPIProvider).getWord();
-});
