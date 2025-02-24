@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(onPressed: (){
-                  ApiService().userSignup(
+                  ApiService(token: '').userSignup(
                       userController.text.toString(),
                       emailController.text.toString(),
                       passwordController.text.toString()).then((value) {

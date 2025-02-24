@@ -20,8 +20,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   @override
   void initState() {
-    ref.read(wordsFromAPIProvider).getWord();
     super.initState();
+    Future.microtask(() {
+      final token = ref.read(tokenProvider);
+      if(token!=null)
+      {
+        ref.read(wordsFromAPIProvider.notifier).state = ApiService(token: token);
+        ref.read(wordsFromAPIProvider).getWord();
+      }
+      else {
+        print("Error: No token found!");
+      }
+
+    });
+
   }
 
   @override

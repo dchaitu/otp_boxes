@@ -89,7 +89,8 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
       print("Calling getCurrentWord API...");
 
       try {
-        var responseBody = await ref.read(wordsFromAPIProvider).storeCurrentWord('chaitu', state.currentWord);
+        var username =ref.read(usernameProvider.notifier).state;
+        var responseBody = await ref.read(wordsFromAPIProvider).storeCurrentWord(username, state.currentWord);
 
         if (responseBody != null && responseBody.containsKey("data")) {
           var data = responseBody["data"] as Map<String, dynamic>;
