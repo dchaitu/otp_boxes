@@ -9,15 +9,7 @@ class KeyboardListenerWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return KeyboardListener(
-        autofocus: true,
-        focusNode: FocusNode(),
-        onKeyEvent: (KeyEvent event) {
-          if (event is KeyDownEvent) {
-            handleKeyPress(context,event.logicalKey,ref);
-          }
-        },
-        child: const GameScreen());
+    return const GameScreen();
   }
 }
 
