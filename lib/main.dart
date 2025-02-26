@@ -4,7 +4,12 @@ import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
 
 
 void main() {
-  runApp(const ProviderScope(child: KeyboardListenerWidget()));
+  runApp(const ProviderScope(
+      child: MaterialApp(
+        home: KeyboardListenerWidget(),
+      ),
+    ),
+  );
 }
 
 

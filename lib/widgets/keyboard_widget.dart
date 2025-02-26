@@ -58,7 +58,9 @@ Widget allLetters(WidgetRef ref, BuildContext context) {
 
   return SizedBox(
     width: width,
+    height: 150,
     child: Column(
+      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: keyboard,
     ),
