@@ -48,7 +48,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         .watch(textInputProvider)
         .isWon;
     final int noOfChances = ref
-        .watch(textInputProvider)
+        .read(textInputProvider)
         .noOfChances;
     print("noOfChances $noOfChances");
 
@@ -88,14 +88,29 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         ),
         body: Builder(
           builder: (BuildContext newContext) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (isWonTextInput) {
-                showPrompt(newContext, "Splendid!");
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              if (isWonTextInput&& noOfChances>=4) {
+                showPrompt(newContext, "IMPRESSIVE!");
+                handleCaseCorrect(newContext);
+              }
+              else if (isWonTextInput&& noOfChances==3) {
+                showPrompt(newContext, "SPLENDID!");
+                handleCaseCorrect(newContext);
+              }
+              else if (isWonTextInput&& noOfChances==1) {
+                showPrompt(newContext, "EEPE!");
                 handleCaseCorrect(newContext);
               }
               if (noOfChances == 0) {
                 print("Prompt should display");
-                showPrompt(newContext, "CREPE");
+                var answer = await ref.read(wordsFromAPIProvider).getCorrectWord();
+                print("Word is $answer");
+                Future.delayed(Duration(milliseconds: 5000), () {
+                  showPrompt(newContext, answer);
+                  handleCaseCorrect(newContext);
+
+                });
+
               }
             });
             return const Center(

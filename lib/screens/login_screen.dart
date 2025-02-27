@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
+import 'package:otp_boxes/game_logic.dart';
 import 'package:otp_boxes/screens/register_screen.dart';
 import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
 
@@ -45,42 +45,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                    onPressed: () async {
-                      // TODO: Business logic need to be moved
-                      String username = userController.text.toString();
-                      String password = passwordController.text.toString();
-                      print("Inside login screen");
-                      Map<String, dynamic>? tokenResponse =
-                      await ApiService(token: '').getToken(username, password);
-
-                    if(tokenResponse!=null && tokenResponse["access"]!=null) {
-                      print("User saved");
-                      Future.delayed(Duration.zero, () {
-                        ref.read(tokenProvider.notifier).state = tokenResponse["access"].toString();
-                        ref.read(usernameProvider.notifier).state = username;
+                  onPressed: () async {
+                    String username = userController.text.toString();
+                    String password = passwordController.text.toString();
+                    print("Inside login screen");
+                    Map<String, dynamic>? tokenResponse = await userLoginWithToken(username, password, context, ref);
+                    if (tokenResponse?["access"].isNotEmpty) {
+                      Future.delayed(Duration.zero, (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const KeyboardListenerWidget(),
+                          ),
+                        );
                       });
-                      var resp = await ref.read(wordsFromAPIProvider)
-                          .userLogin(username, password);
-                      print("resp is ${resp}");
-                      if (tokenResponse["access"].isNotEmpty) {
-
-                        Future.delayed(Duration.zero, (){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                              const KeyboardListenerWidget(),
-                            ),
-                          );
-                        });
-                      }
                     }
                     },
-                    child: const Text("Login"),
+                  child: const Text("Login"),
                 ),
               ),
               TextButton(onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => RegisterScreen()));
               },
 
                   child: const Text("Don't have account create here"))

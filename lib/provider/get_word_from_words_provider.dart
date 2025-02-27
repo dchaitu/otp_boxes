@@ -12,6 +12,7 @@ class ApiService {
   String loginUrl = 'http://127.0.0.1:8000/login/';
   String signUpUrl = 'http://127.0.0.1:8000/signup/';
   String guessedWordUrl = 'http://127.0.0.1:8000/guess/';
+  String correctWordUrl = 'http://127.0.0.1:8000/correct/';
   // String token = '';
 
 
@@ -117,6 +118,25 @@ class ApiService {
       print("Exception: $error");
     }
 
+  }
+  Future<String> getCorrectWord() async
+  {
+    print("current token: $token");
+    final response = await http.get(Uri.parse(correctWordUrl),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        'Authorization': 'Bearer $token'
+      },
+    );
+    if (response.statusCode == 200) {
+      print("Word fetched successfully: ${response.body}");
+      var word = jsonDecode(response.body) as Map<String, dynamic>;
+      return word["answer"];
+    } else {
+      print("Error fetching word: ${response.statusCode} - ${response.body}");
+    }
+    return "";
   }
 
 }
