@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/provider/theme_provider.dart';
+import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  var username;
+  @override
+  void initState()  {
+    username = UserDetailsSharedPref.getUserName()??"Guest";
+    super.initState();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
     final isDarkTheme = ref.watch(themeProvider);
     return Scaffold(
       appBar: AppBar(
@@ -25,6 +39,12 @@ class SettingsScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            ListTile(
+              leading:Icon(Icons.person_2_rounded,
+              color: Theme.of(context).colorScheme.primary, ),
+              title: Text(username,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),),
             SwitchListTile(
               title: Text(
                 "Hard Mode",

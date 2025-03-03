@@ -8,9 +8,12 @@ class KeyColorNotifier extends StateNotifier<Map<String, TileType>>{
   {
     state = {...state, key:validate};
   }
-  void resetColors()
-  {
-    state = {};
+  void resetColors() {
+    Map<String, TileType> resetColors = {
+      for (var letter in "QWERTYUIOPASDFGHJKLZXCVBNM".split(''))
+        letter: TileType.notAnswered
+    };
+    state = resetColors;
   }
 
 }

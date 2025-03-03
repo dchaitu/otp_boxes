@@ -6,6 +6,7 @@ import 'package:otp_boxes/provider/theme_provider.dart';
 import 'package:otp_boxes/screens/settings_screen.dart';
 import 'package:otp_boxes/screens/stats_dialog.dart';
 import 'package:otp_boxes/themes/themes.dart';
+import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_widget.dart';
 import 'package:otp_boxes/widgets/word_grid_widget.dart';
 
@@ -22,7 +23,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      final token = ref.read(tokenProvider);
+      final token = UserDetailsSharedPref.getUserToken();
       if(token!=null)
       {
         ref.read(wordsFromAPIProvider.notifier).state = ApiService(token: token);
@@ -36,20 +37,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = ref.watch(themeProvider);
-    final bool isWonTextInput = ref
-        .watch(textInputProvider)
-        .isWon;
-    final int noOfChances = ref
-        .read(textInputProvider)
-        .noOfChances;
+    final bool isWonTextInput = ref.watch(textInputProvider).isWon;
+    final int noOfChances = ref.read(textInputProvider).noOfChances;
     print("noOfChances $noOfChances");
 
     return MaterialApp(
@@ -80,7 +73,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     icon: const Icon(Icons.settings),
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const SettingsScreen()));
+                          builder: (context) => SettingsScreen()));
                     });
               },
             )
@@ -91,24 +84,36 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               if (isWonTextInput&& noOfChances>=4) {
                 showPrompt(newContext, "IMPRESSIVE!");
-                handleCaseCorrect(newContext);
+                Future.delayed(Duration(milliseconds: 3000), () {
+                  handleCaseCorrect(newContext);
+                });
               }
               else if (isWonTextInput&& noOfChances==3) {
                 showPrompt(newContext, "SPLENDID!");
-                handleCaseCorrect(newContext);
+                Future.delayed(Duration(milliseconds: 3000), () {
+                  handleCaseCorrect(newContext);
+                });
+              }
+              else if (isWonTextInput&& noOfChances==2) {
+                showPrompt(newContext, "NICE!");
+                Future.delayed(Duration(milliseconds: 3000), () {
+                  handleCaseCorrect(newContext);
+                });
               }
               else if (isWonTextInput&& noOfChances==1) {
                 showPrompt(newContext, "EEPE!");
-                handleCaseCorrect(newContext);
+                Future.delayed(Duration(milliseconds: 3000), () {
+                  handleCaseCorrect(newContext);
+                });
               }
               if (noOfChances == 0) {
                 print("Prompt should display");
+                showPrompt(newContext, "OOPS!");
                 var answer = await ref.read(wordsFromAPIProvider).getCorrectWord();
                 print("Word is $answer");
-                Future.delayed(Duration(milliseconds: 5000), () {
                   showPrompt(newContext, answer);
+                Future.delayed(Duration(milliseconds: 3000), () {
                   handleCaseCorrect(newContext);
-
                 });
 
               }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/colors.dart';
+import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
-import 'package:otp_boxes/screens/game_screen.dart';
 
 class StatsDialog extends ConsumerWidget {
   const StatsDialog({super.key});
@@ -34,7 +34,11 @@ class StatsDialog extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Future.delayed(const Duration(milliseconds: 1000), () {
+                  Navigator.maybePop(context);
+                });
+              },
               icon: const Icon(Icons.clear),
               alignment: Alignment.topRight),
           const Expanded(
@@ -57,11 +61,10 @@ class StatsDialog extends ConsumerWidget {
             child: ElevatedButton(
               onPressed: () {
                 // resetGameState
-                ref.read(textInputProvider.notifier).resetGameState(ref);
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const GameScreen()),
-                    (route) => false);
+                var focusNode = ref.read(focusNodeProvider);
+                ref.read(textInputProvider.notifier).resetGameState(ref,focusNode);
+                Navigator.popAndPushNamed(
+                    context, '/game');
               },
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.all(correctGreen),

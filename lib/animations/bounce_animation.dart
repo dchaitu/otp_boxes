@@ -32,7 +32,7 @@ class _BounceAnimationState extends State<BounceAnimation>
     _animationController.dispose();
     super.dispose();
   }
-
+  // creates new instance of same widget
   @override
   void didUpdateWidget(covariant BounceAnimation oldWidget) {
     if (widget.isBouncing && mounted) {

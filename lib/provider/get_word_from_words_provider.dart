@@ -1,18 +1,22 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:otp_boxes/main.dart';
+import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 
 class ApiService {
   final String token;
   ApiService({required this.token});
 
-  String authApiUrl = 'http://127.0.0.1:8000/api/token/';
-  String wordUrl = 'http://127.0.0.1:8000/word/';
-  String loginUrl = 'http://127.0.0.1:8000/login/';
-  String signUpUrl = 'http://127.0.0.1:8000/signup/';
-  String guessedWordUrl = 'http://127.0.0.1:8000/guess/';
-  String correctWordUrl = 'http://127.0.0.1:8000/correct/';
+  String mainUrl = 'http://127.0.0.1:8080';
+  String get authApiUrl => '$mainUrl/api/token/';
+  String get wordUrl => '$mainUrl/word/';
+  String get loginUrl => '$mainUrl/login/';
+  String get signUpUrl => '$mainUrl/signup/';
+  String get guessedWordUrl => '$mainUrl/guess/';
+  String get correctWordUrl => '$mainUrl/correct/';
   // String token = '';
 
 
@@ -29,6 +33,8 @@ class ApiService {
       print("Word fetched successfully: ${response.body}");
     } else {
       print("Error fetching word: ${response.statusCode} - ${response.body}");
+    // token may expired need to remove it
+      UserDetailsSharedPref.setToken('');
     }
 
   }
@@ -46,7 +52,15 @@ class ApiService {
       var tokenDict = jsonDecode(tokenResponse.body) as Map<String, dynamic>;
       print("access token is  ${tokenDict["access"]}");
       return tokenDict;
-    } else {
+    }
+
+    else if(tokenResponse.statusCode ==401){
+    //   Need to write code to redirect
+      navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
+
+    }
+
+    else {
       print("Error: ${tokenResponse.statusCode} - ${tokenResponse.body}");
     }
     return null;
@@ -68,7 +82,12 @@ class ApiService {
       );
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;
-      } else {
+      }else if(response.statusCode ==401){
+        navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
+
+      }
+
+      else {
         print("Error: ${response.statusCode} - ${response.body}");
       }
     } catch (error) {
@@ -141,8 +160,10 @@ class ApiService {
 
 }
 
+final focusNodeProvider = Provider((ref)=> FocusNode());
+
 final wordsFromAPIProvider = StateProvider<ApiService>((ref) {
-  final token = ref.watch(tokenProvider);
+  final token = UserDetailsSharedPref.getUserToken();
   return ApiService(token: token ?? "");
 });
 final usernameProvider = StateProvider<String>((ref)=> '');

@@ -22,7 +22,8 @@ class WordRowWidget extends ConsumerWidget {
     final currentWord = isActiveRow
         ? state.currentWord
         : (rowIndex < state.userWords.length ? state.userWords[rowIndex] : '');
-
+    final backBounce = state.backBounce;
+    print("game is won ${state.isWon}");
     return IgnorePointer(
       ignoring: state.isWon,
       child: Row(
@@ -41,7 +42,7 @@ class WordRowWidget extends ConsumerWidget {
           final controller = TextEditingController(text: letter);
           // final bounce = tileIndex == state.tilesEntered.length - 1;
           bool isBouncing = false;
-          if(tileIndex == state.tilesEntered.length - 1)
+          if(tileIndex == state.tilesEntered.length - 1&&!backBounce)
             {
               isBouncing = true;
             }

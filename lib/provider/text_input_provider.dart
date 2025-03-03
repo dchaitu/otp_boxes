@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/key_colors.dart';
 import 'package:otp_boxes/constants/enum.dart';
@@ -60,6 +61,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
     if (state.currentWord.length < 5) {
       state = state.copyWith(
           currentWord: state.currentWord + letter,
+          backBounce: false,
           tilesEntered: [
             ...state.tilesEntered,
             Tile(letter: letter, validate: TileType.notAnswered)
@@ -83,6 +85,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
   }
 
   void enterChar(WidgetRef ref) async {
+    state.backBounce = true;
     print("state.currentWord ${state.currentWord}, state.noOfChances ${state.noOfChances}");
 
     if (state.currentWord.length == 5 && state.noOfChances > 0) {
@@ -141,8 +144,14 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
   }
 
 
-  void resetGameState(WidgetRef ref) {
+  void resetGameState(WidgetRef ref, FocusNode focusNode) {
     ref.read(keyColorProvider.notifier).resetColors();
+    Map<String, TileType> resetColors = {
+      for (var letter in "QWERTYUIOPASDFGHJKLZXCVBNM".split(''))
+        letter: TileType.notAnswered
+    };
+    print("keyboard colors updated");
+
     state = state.copyWith(
       userWords: [],
       currentWord: '',
@@ -151,9 +160,13 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
       noOfChances: 6,
       currentRow: 0,
       tilesEntered: [],
-      keyColors: keyColorsMap,
-        backBounce:false
+      keyColors: resetColors,
+      backBounce:false
     );
+    Future.delayed(Duration(milliseconds: 100), () {
+      focusNode.requestFocus();
+    });
+
   }
 
   void addBackBounce() {

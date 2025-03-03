@@ -1,18 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
 import 'package:otp_boxes/screens/game_screen.dart';
 
-class KeyboardListenerWidget extends ConsumerWidget {
+class KeyboardListenerWidget extends ConsumerStatefulWidget {
   const KeyboardListenerWidget({super.key});
 
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _KeyboardListenerWidgetState createState() => _KeyboardListenerWidgetState();
+}
+class _KeyboardListenerWidgetState extends ConsumerState<KeyboardListenerWidget>{
+  var _focusNode; // Persistent FocusNode
+
+  @override
+  void initState() {
+
+    super.initState();
+    Future.delayed(Duration(milliseconds: 100), () {
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose(); // Dispose to prevent memory leaks
+    super.dispose();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    _focusNode = ref.read(focusNodeProvider);
     return KeyboardListener(
-        autofocus: true,
-        focusNode: FocusNode(),
+        // autofocus: true,
+        focusNode: _focusNode,
         onKeyEvent: (KeyEvent event) {
+          print("keyboard key is ${event.logicalKey.keyLabel}");
           if (event is KeyDownEvent) {
             handleKeyPress(context,event.logicalKey,ref);
           }
