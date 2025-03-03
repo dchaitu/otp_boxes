@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:otp_boxes/main.dart';
@@ -160,12 +159,9 @@ class ApiService {
 
 }
 
-final focusNodeProvider = Provider((ref)=> FocusNode());
 
 final wordsFromAPIProvider = StateProvider<ApiService>((ref) {
   final token = UserDetailsSharedPref.getUserToken();
   return ApiService(token: token ?? "");
 });
-final usernameProvider = StateProvider<String>((ref)=> '');
-final tokenProvider = StateProvider<String?>((ref) => null);
 

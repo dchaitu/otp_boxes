@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
+import 'package:otp_boxes/provider/validation_providers.dart';
 import 'package:otp_boxes/provider/text_input_provider.dart';
 import 'package:otp_boxes/screens/game_screen.dart';
 

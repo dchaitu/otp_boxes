@@ -4,6 +4,7 @@ import 'package:otp_boxes/constants/key_colors.dart';
 import 'package:otp_boxes/constants/enum.dart';
 import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/provider/key_color_provider.dart';
+import 'package:otp_boxes/provider/validation_providers.dart';
 
 import '../models/tile.dart';
 

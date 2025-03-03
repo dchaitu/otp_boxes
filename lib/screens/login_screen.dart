@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/game_logic.dart';
+import 'package:otp_boxes/provider/validation_providers.dart';
 import 'package:otp_boxes/screens/register_screen.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
@@ -18,6 +19,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  TextEditingController userController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   var token;
   @override
   void initState() {
@@ -27,11 +30,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    TextEditingController userController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
+  void dispose() {
+    userController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -64,11 +71,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     validator: (value)=> value!.isEmpty? "Enter username":null,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: "Password",
-                      prefixIcon: Icon(Icons.lock)
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(onPressed: () {
+                          print("Show password is ${ref.read(showObscureTextProvider)}");
+                          ref.read(showObscureTextProvider.notifier).state =
+                          !ref.read(showObscureTextProvider);
+                      },
+                          icon: const Icon(Icons.remove_red_eye))
+
                     ),
-                    obscureText: true,
+                    obscureText: ref.watch(showObscureTextProvider),
                     controller: passwordController,
                     validator: (value)=> value!.isEmpty? "Enter password":null,
                   ),
