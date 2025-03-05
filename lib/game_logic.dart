@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/main.dart';
 import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/provider/validation_providers.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
@@ -39,4 +40,11 @@ Future<Map<String, dynamic>?> userLoginWithToken(
     }
   }
   return null;
+}
+
+
+Future<void> userSignOut()  async {
+  await UserDetailsSharedPref.setToken("");
+  await UserDetailsSharedPref.setUserName("");
+  navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
 }

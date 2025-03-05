@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/game_logic.dart';
 import 'package:otp_boxes/provider/theme_provider.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 
@@ -65,7 +66,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 value: isDarkTheme,
                 onChanged: (value) {
                   ref.read(themeProvider.notifier).state = value;
-                })
+                }),
+            if (username.isNotEmpty)
+              ElevatedButton(
+                onPressed: () {
+                  userSignOut();
+                },
+                child: const Text('Sign Out'),
+              ),
           ],
         ),
       ),

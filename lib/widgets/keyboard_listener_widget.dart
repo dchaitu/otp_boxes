@@ -24,11 +24,11 @@ class _KeyboardListenerWidgetState extends ConsumerState<KeyboardListenerWidget>
     });
   }
 
-  @override
-  void dispose() {
-    _focusNode.dispose(); // Dispose to prevent memory leaks
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _focusNode.dispose(); // Dispose to prevent memory leaks
+  //   super.dispose();
+  // }
 
 
   @override
