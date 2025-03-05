@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "415880282002",
+    "project_id": "wordle-services",
+    "storage_bucket": "wordle-services.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415880282002:android:d99b5c82fdb826ee080b4b",
+        "android_client_info": {
+          "package_name": "com.example.otp_boxes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaHzKnf8Z9BeoEDPMbaxp_yU3NhNUY-Vs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

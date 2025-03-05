@@ -4,11 +4,15 @@ import 'package:otp_boxes/screens/game_screen.dart';
 import 'package:otp_boxes/screens/login_screen.dart';
 import 'package:otp_boxes/screens/settings_screen.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 
 Future<void> main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   WidgetsFlutterBinding.ensureInitialized();
   await UserDetailsSharedPref.init();
   runApp(const ProviderScope(
