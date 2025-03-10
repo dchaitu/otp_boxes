@@ -9,7 +9,7 @@ class ApiService {
   final String token;
   ApiService({required this.token});
 
-  String mainUrl = 'http://127.0.0.1:8080';
+  String mainUrl = 'https://dchaitu.pythonanywhere.com/';
   String get authApiUrl => '$mainUrl/api/token/';
   String get wordUrl => '$mainUrl/word/';
   String get loginUrl => '$mainUrl/login/';
@@ -140,11 +140,16 @@ class ApiService {
   Future<String> getCorrectWord() async
   {
     print("current token: $token");
+    var currentToken = await UserDetailsSharedPref.getUserToken()??"";
+    if (currentToken.isEmpty) {
+      print("Error: Token is empty or null.");
+      return "";
+    }
     final response = await http.get(Uri.parse(correctWordUrl),
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        'Authorization': 'Bearer $token'
+        'Authorization': 'Bearer $currentToken'
       },
     );
     if (response.statusCode == 200) {
@@ -152,7 +157,7 @@ class ApiService {
       var word = jsonDecode(response.body) as Map<String, dynamic>;
       return word["answer"];
     } else {
-      print("Error fetching word: ${response.statusCode} - ${response.body}");
+      print("Error fetching word: ${response.statusCode}");
     }
     return "";
   }
