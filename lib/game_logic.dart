@@ -10,7 +10,7 @@ Future<String> getJwtToken(String username, String password) async {
   Map<String, dynamic>? tokenResponse =
       await ApiService(token: currentToken).getToken(username, password);
   var newToken = tokenResponse!["access"];
-  if(currentToken!=newToken) {
+  if(currentToken!=newToken || currentToken.isEmpty) {
     print("updating token  : $tokenResponse");
     await UserDetailsSharedPref.setToken(newToken);
     await UserDetailsSharedPref.setUserName(username);
@@ -25,25 +25,26 @@ Future<String> getJwtToken(String username, String password) async {
 Future<Map<String, dynamic>?> userLoginWithToken(
     String username, String password, BuildContext context, WidgetRef ref
     ) async {
-  String? token = await UserDetailsSharedPref.getUserToken();
-  if(token!.isEmpty) {
+  // String? token = await UserDetailsSharedPref.getUserToken();
+  // if(token!.isEmpty) {
     var loginResp =
     await ref.read(wordsFromAPIProvider).userLogin(username, password);
+
+    print("userLoginWithToken $loginResp");
     if (loginResp != null && loginResp["access"] != null) {
       print("User saved");
-      Future.delayed(Duration.zero, () {
-        ref.read(usernameProvider.notifier).state = username;
-      });
-
+      ref.read(usernameProvider.notifier).state = username;
+      print("Username $username, is setting for usernameProvider");
       print("resp is ${loginResp}");
       return loginResp;
     }
-  }
+  // }
   return null;
 }
 
 
 Future<void> userSignOut()  async {
+  print("User Sign Out");
   await UserDetailsSharedPref.setToken("");
   await UserDetailsSharedPref.setUserName("");
   navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);

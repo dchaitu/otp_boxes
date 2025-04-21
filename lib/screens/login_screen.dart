@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/game_logic.dart';
 import 'package:otp_boxes/provider/validation_providers.dart';
@@ -95,13 +94,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: ElevatedButton(
                           style:ButtonStyle(backgroundColor:WidgetStateProperty.all(correctGreen)),
                         onPressed: () async {
-                          String username = userController.text.toString();
-                          String password = passwordController.text.toString();
-                          var tok = await getJwtToken(username,  password);
-                          print("Inside login screen $tok");
+                          String username = userController.text.trim().toString();
+                          String password = passwordController.text.trim().toString();
+                          Map<String, dynamic>? tokenResponse =
+                          await userLoginWithToken(username, password, context, ref);
+                          // var newTok = await getJwtToken(username,  password);
+                          // print("Inside login screen $newTok");
 
 
-                          if (token.isNotEmpty && token==tok) {
+                          if (tokenResponse != null && tokenResponse["access"] != null) {
+                            String newToken = tokenResponse["access"];
+                            await UserDetailsSharedPref.setToken(newToken);
+                            await UserDetailsSharedPref.setUserName(username);
+
                             Future.delayed(Duration.zero, (){
                               Navigator.push(
                                 context,
@@ -114,19 +119,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           }
                           else{
 
-                            Map<String, dynamic>? tokenResponse = await userLoginWithToken(username, password, context, ref);
-                            print("tokenResponse in login screen  $tokenResponse");
-                            await UserDetailsSharedPref.setToken(tok.toString());
-                            print("New token is ${UserDetailsSharedPref.getUserToken()}");
-                            Future.delayed(Duration.zero, (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                  const KeyboardListenerWidget(),
-                                ),
-                              );
-                            });
+                            // Map<String, dynamic>? tokenResponse = await userLoginWithToken(username, password, context, ref);
+                            // print("tokenResponse in login screen  $tokenResponse");
+                            // await UserDetailsSharedPref.setToken(newTok.toString());
+                            // print("New token is ${UserDetailsSharedPref.getUserToken()}");
+                            // Future.delayed(Duration.zero, (){
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) =>
+                            //       const KeyboardListenerWidget(),
+                            //     ),
+                            //   );
+                            // });
+                            final messenger = ScaffoldMessenger.of(context);
+
+                            await Future.delayed(Duration(milliseconds: 100)); // optional but helps in some cases
+
+                            messenger.showSnackBar(SnackBar(content: Text("Login failed")));
                           }
                           },
                         child: const Text("Login",style: TextStyle(color: Colors.white),),

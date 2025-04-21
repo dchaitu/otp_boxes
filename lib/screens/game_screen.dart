@@ -25,9 +25,10 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
     Future.microtask(() {
       final token = UserDetailsSharedPref.getUserToken();
-      if(token!=null)
+      if(token!.isNotEmpty)
       {
         ref.read(wordsFromAPIProvider.notifier).state = ApiService(token: token);
+        print("Now token is $token");
         ref.read(wordsFromAPIProvider).getWord();
 
       }
@@ -150,9 +151,13 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         barrierColor: Colors.transparent,
         context: context,
         builder: (context) {
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            Navigator.maybePop(context);
-          });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          if (Navigator.canPop(context)) {
+            Navigator.of(context, rootNavigator: true).maybePop();
+          }
+        });
+      });
           return AlertDialog(
             title: Text(message, textAlign: TextAlign.center),
           );
