@@ -9,7 +9,7 @@ class ApiService {
   final String token;
   ApiService({required this.token});
 
-  String mainUrl = 'http://127.0.0.1:8080';
+  String mainUrl = 'https://jctmglxoe8.execute-api.us-east-1.amazonaws.com/testing';
   String get authApiUrl => '$mainUrl/api/token/';
   String get wordUrl => '$mainUrl/word/';
   String get loginUrl => '$mainUrl/login/';
@@ -33,7 +33,8 @@ class ApiService {
     } else {
       print("Error fetching word: ${response.statusCode} - ${response.body}");
     // token may expired need to remove it
-      UserDetailsSharedPref.setToken('');
+      print("UserToken is ${UserDetailsSharedPref.getUserToken()} ");
+      // UserDetailsSharedPref.setToken('');
     }
 
   }
@@ -49,6 +50,10 @@ class ApiService {
     );
     if (tokenResponse.statusCode == 200) {
       var tokenDict = jsonDecode(tokenResponse.body) as Map<String, dynamic>;
+      if (!tokenDict.containsKey("access")) {
+        print("Missing token in response");
+        return null;
+      }
       print("access token is  ${tokenDict["access"]}");
       return tokenDict;
     }
@@ -125,7 +130,12 @@ class ApiService {
   {
     try{
       var response = await http.post(Uri.parse(signUpUrl),
-          body: {"username": username, "email":email, "password": password});
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: jsonEncode({"username": username, "email": email, "password": password})
+      );
 
       if (response.statusCode == 200) {
         print("$username created successfully");
@@ -140,21 +150,29 @@ class ApiService {
   Future<String> getCorrectWord() async
   {
     print("current token: $token");
-    final response = await http.get(Uri.parse(correctWordUrl),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        'Authorization': 'Bearer $token'
-      },
-    );
-    if (response.statusCode == 200) {
-      print("Word fetched successfully: ${response.body}");
-      var word = jsonDecode(response.body) as Map<String, dynamic>;
-      return word["answer"];
-    } else {
-      print("Error fetching word: ${response.statusCode} - ${response.body}");
+    var currentToken = await UserDetailsSharedPref.getUserToken()??"";
+    if (currentToken.isEmpty) {
+      print("Error: Token is empty or null.");
+      return "";
     }
-    return "";
+    else {
+      final response = await http.get(
+        Uri.parse(correctWordUrl),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          'Authorization': 'Bearer $currentToken'
+        },
+      );
+      if (response.statusCode == 200) {
+        print("Word fetched successfully: ${response.body}");
+        var word = jsonDecode(response.body) as Map<String, dynamic>;
+        return word["answer"];
+      } else {
+        print("Error fetching word: ${response.statusCode}");
+      }
+      return "";
+    }
   }
 
 }

@@ -22,12 +22,15 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   @override
   void initState() {
     super.initState();
+
     Future.microtask(() {
       final token = UserDetailsSharedPref.getUserToken();
-      if(token!=null)
+      if(token!.isNotEmpty)
       {
         ref.read(wordsFromAPIProvider.notifier).state = ApiService(token: token);
+        print("Now token is $token");
         ref.read(wordsFromAPIProvider).getWord();
+
       }
       else {
         print("Error: No token found!");
@@ -73,7 +76,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     icon: const Icon(Icons.settings),
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SettingsScreen()));
+                          builder: (context) => const SettingsScreen()));
                     });
               },
             )
@@ -84,35 +87,35 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               if (isWonTextInput&& noOfChances>=4) {
                 showPrompt(newContext, "IMPRESSIVE!");
-                Future.delayed(Duration(milliseconds: 3000), () {
+                Future.delayed(const Duration(milliseconds: 3000), () {
                   handleCaseCorrect(newContext);
                 });
               }
               else if (isWonTextInput&& noOfChances==3) {
                 showPrompt(newContext, "SPLENDID!");
-                Future.delayed(Duration(milliseconds: 3000), () {
+                Future.delayed(const Duration(milliseconds: 3000), () {
                   handleCaseCorrect(newContext);
                 });
               }
               else if (isWonTextInput&& noOfChances==2) {
                 showPrompt(newContext, "NICE!");
-                Future.delayed(Duration(milliseconds: 3000), () {
+                Future.delayed(const Duration(milliseconds: 3000), () {
                   handleCaseCorrect(newContext);
                 });
               }
               else if (isWonTextInput&& noOfChances==1) {
                 showPrompt(newContext, "EEPE!");
-                Future.delayed(Duration(milliseconds: 3000), () {
+                Future.delayed(const Duration(milliseconds: 3000), () {
                   handleCaseCorrect(newContext);
                 });
               }
               if (noOfChances == 0) {
                 print("Prompt should display");
                 showPrompt(newContext, "OOPS!");
+                Future.delayed(const Duration(milliseconds: 3000), () async {
                 var answer = await ref.read(wordsFromAPIProvider).getCorrectWord();
                 print("Word is $answer");
                   showPrompt(newContext, answer);
-                Future.delayed(Duration(milliseconds: 3000), () {
                   handleCaseCorrect(newContext);
                 });
 
@@ -148,9 +151,13 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         barrierColor: Colors.transparent,
         context: context,
         builder: (context) {
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            Navigator.maybePop(context);
-          });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          if (Navigator.canPop(context)) {
+            Navigator.of(context, rootNavigator: true).maybePop();
+          }
+        });
+      });
           return AlertDialog(
             title: Text(message, textAlign: TextAlign.center),
           );

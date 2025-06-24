@@ -49,7 +49,6 @@ Widget allLetters(WidgetRef ref, BuildContext context) {
 
     keyboard.add(Expanded(
       child: Row(
-        spacing:0,
         mainAxisAlignment: MainAxisAlignment.center,
         children: eachRow,
       ),

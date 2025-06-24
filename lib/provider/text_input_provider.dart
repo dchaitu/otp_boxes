@@ -5,6 +5,7 @@ import 'package:otp_boxes/constants/enum.dart';
 import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/provider/key_color_provider.dart';
 import 'package:otp_boxes/provider/validation_providers.dart';
+import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 
 import '../models/tile.dart';
 
@@ -88,13 +89,17 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
   void enterChar(WidgetRef ref) async {
     state.backBounce = true;
     print("state.currentWord ${state.currentWord}, state.noOfChances ${state.noOfChances}");
-
+    var username = UserDetailsSharedPref.getUserName();
+    print("username from UserDetailsSharedPref $username");
     if (state.currentWord.length == 5 && state.noOfChances > 0) {
       print("Calling getCurrentWord API...");
-
       try {
-        var username =ref.read(usernameProvider.notifier).state;
-        var responseBody = await ref.read(wordsFromAPIProvider).storeCurrentWord(username, state.currentWord);
+        if(ref.watch(usernameProvider.notifier).state.isEmpty) {
+          ref.read(usernameProvider.notifier).state = username!;
+
+        }
+
+        var responseBody = await ref.read(wordsFromAPIProvider).storeCurrentWord(username!, state.currentWord);
 
         if (responseBody != null && responseBody.containsKey("data")) {
           var data = responseBody["data"] as Map<String, dynamic>;
