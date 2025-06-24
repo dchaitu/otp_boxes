@@ -13,14 +13,14 @@ class ApiService {
   String get authApiUrl => '$mainUrl/api/token/';
   String get wordUrl => '$mainUrl/word/';
   String get loginUrl => '$mainUrl/login/';
-  String get signUpUrl => '$mainUrl/signup/';
+  String get signUpUrl => '$mainUrl/signup';
   String get guessedWordUrl => '$mainUrl/guess/';
   String get correctWordUrl => '$mainUrl/correct/';
   // String token = '';
 
 
   Future<void> getWord() async {
-    print("current token: $token");
+    // print("current token: $token");
     final response = await http.get(Uri.parse(wordUrl),
       headers: {
         "Content-Type": "application/json",
@@ -33,7 +33,7 @@ class ApiService {
     } else {
       print("Error fetching word: ${response.statusCode} - ${response.body}");
     // token may expired need to remove it
-      print("UserToken is ${UserDetailsSharedPref.getUserToken()} ");
+    //   print("UserToken is ${UserDetailsSharedPref.getUserToken()} ");
       // UserDetailsSharedPref.setToken('');
     }
 
@@ -108,6 +108,7 @@ class ApiService {
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "Token": token
           },
           body: jsonEncode({"username": username, "password": password})
 
@@ -126,30 +127,59 @@ class ApiService {
     return null;
   }
 
-  Future<void> userSignup(String username, String email, String password) async
-  {
-    try{
-      var response = await http.post(Uri.parse(signUpUrl),
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-          body: jsonEncode({"username": username, "email": email, "password": password})
+  Future<Map<String, dynamic>?> userSignup(String username, String email, String password, {bool isGoogleSignup = false}) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$signUpUrl/'),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: jsonEncode({
+          "username": username,
+          "email": email,
+          "password": password,
+          "is_google_signup": isGoogleSignup,
+        }),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         print("$username created successfully");
+        return jsonDecode(response.body) as Map<String, dynamic>;
       } else {
         print("Error: ${response.statusCode}, ${response.body}");
+        return null;
       }
     } catch (error) {
       print("Exception: $error");
+      return null;
     }
+  }
 
+  Future<bool> checkUsernameExists(String username) async {
+    try {
+      print("Check Username $token");
+      final response = await http.get(
+        Uri.parse('$signUpUrl?user=$username'),
+        headers: {
+          "Accept": "application/json",
+          'Authorization': 'Bearer $token'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return data['exists'] ?? false;
+      }
+      return false;
+    } catch (error) {
+      print("Error checking username: $error");
+      return false;
+    }
   }
   Future<String> getCorrectWord() async
   {
-    print("current token: $token");
+    // print("current token: $token");
     var currentToken = await UserDetailsSharedPref.getUserToken()??"";
     if (currentToken.isEmpty) {
       print("Error: Token is empty or null.");

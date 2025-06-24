@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:otp_boxes/game_logic.dart';
 import 'package:otp_boxes/provider/validation_providers.dart';
 import 'package:otp_boxes/screens/register_screen.dart';
+import 'package:otp_boxes/screens/username_screen.dart';
+import 'package:otp_boxes/services/auth_service.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
 
@@ -132,17 +135,67 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             //     ),
                             //   );
                             // });
-                            final messenger = ScaffoldMessenger.of(context);
 
                             await Future.delayed(Duration(milliseconds: 100)); // optional but helps in some cases
 
-                            messenger.showSnackBar(SnackBar(content: Text("Login failed")));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login failed")));
                           }
                           },
                         child: const Text("Login",style: TextStyle(color: Colors.white),),
                       ),
                     ),
                   ),
+
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      icon: const FaIcon(FontAwesomeIcons.google, color: Colors.white),
+                      onPressed: () async {
+                        try {
+                          final authService = AuthService();
+                          final userCredential = await authService.signInWithGoogle();
+                          
+                          if (userCredential?.user != null) {
+                            // Navigate to username screen after successful Google sign in
+                            if (!mounted) return;
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UsernameScreen(
+                                  email: userCredential!.user!.email ?? '',
+                                  googleId: userCredential.user!.uid,
+                                ),
+                              ),
+                            );
+                          } else {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Failed to sign in with Google')),
+                            );
+                          }
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      label: const Text(
+                        'Sign In with Google',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
+
+
                   TextButton(onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => const RegisterScreen())

@@ -11,10 +11,10 @@ Future<String> getJwtToken(String username, String password) async {
       await ApiService(token: currentToken).getToken(username, password);
   var newToken = tokenResponse!["access"];
   if(currentToken!=newToken || currentToken.isEmpty) {
-    print("updating token  : $tokenResponse");
+    // print("updating token  : $tokenResponse");
     await UserDetailsSharedPref.setToken(newToken);
     await UserDetailsSharedPref.setUserName(username);
-    print("Getting token $newToken");
+    // print("Getting token $newToken");
     return newToken;
   }
   return currentToken;
