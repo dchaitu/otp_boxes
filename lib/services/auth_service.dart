@@ -16,6 +16,33 @@ class AuthService {
     ],
   );
 
+  // Sign in with email and password
+  Future<UserCredential?> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      // Initialize SharedPreferences if not already initialized
+      await UserDetailsSharedPref.init();
+      
+      // Sign in with email and password
+      final userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      
+      // Save the user's email
+      if (userCredential.user?.email != null) {
+        await UserDetailsSharedPref.setUserName(userCredential.user!.email!);
+      }
+      
+      return userCredential;
+    } catch (e) {
+      print('Error signing in with email and password: $e');
+      return null;
+    }
+  }
+
   // Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
     try {

@@ -8,16 +8,17 @@ class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
-  bool _isLoading = false;
-  bool _obscurePassword = true;
   final _formKey = GlobalKey<FormState>();
   final _userController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
