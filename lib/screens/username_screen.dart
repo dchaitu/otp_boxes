@@ -64,25 +64,33 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
         isGoogleSignup: true,
       );
 
-      if (signupResult != null && signupResult['access'] != null) {
+      if (signupResult != null && signupResult['message']?.contains('created') == true) {
         if (!mounted) return;
         
-        // Save token and navigate to home
-        await UserDetailsSharedPref.setToken(signupResult['access']);
-        await UserDetailsSharedPref.setUserName(username);
+        // Get token for the newly created user
+        final tokenResponse = await apiService.getToken(username, widget.googleId);
         
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const KeyboardListenerWidget(),
-          ),
-        );
-      } else {
-        setState(() {
-          _errorMessage = 'Failed to create account. Please try again.';
-          _isLoading = false;
-        });
+        if (tokenResponse != null && tokenResponse['access'] != null) {
+          // Save token and navigate to home
+          await UserDetailsSharedPref.setToken(tokenResponse['access']);
+          await UserDetailsSharedPref.setUserName(username);
+          
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const KeyboardListenerWidget(),
+            ),
+          );
+          return;
+        }
       }
+      
+      // If we get here, something went wrong
+      setState(() {
+        _errorMessage = 'Failed to create account. Please try again.';
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _errorMessage = 'An error occurred. Please try again.';

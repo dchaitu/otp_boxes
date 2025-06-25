@@ -49,16 +49,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(30),
-          // child: KeyboardListener(
-          //   focusNode: FocusNode(),
-          //   onKeyEvent: (KeyEvent event) {
-          //     if (event.logicalKey == LogicalKeyboardKey.enter) {
-          //       if(_formKey.currentState!.validate())
-          //         {
-          //           loginUser(userController,passwordController,context);
-          //         }
-          //     }
-          //   },
             child: Form(
               key: _formKey,
               child: Column(
@@ -99,10 +89,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onPressed: () async {
                           String username = userController.text.trim().toString();
                           String password = passwordController.text.trim().toString();
+                          var newTok = await getJwtToken(username,  password);
                           Map<String, dynamic>? tokenResponse =
                           await userLoginWithToken(username, password, context, ref);
-                          // var newTok = await getJwtToken(username,  password);
-                          // print("Inside login screen $newTok");
+                          print("Inside login screen $newTok");
+                          print("tokenResponse in login screen  $tokenResponse");
 
 
                           if (tokenResponse != null && tokenResponse["access"] != null) {

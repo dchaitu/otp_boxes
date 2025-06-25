@@ -11,10 +11,8 @@ Future<String> getJwtToken(String username, String password) async {
       await ApiService(token: currentToken).getToken(username, password);
   var newToken = tokenResponse!["access"];
   if(currentToken!=newToken || currentToken.isEmpty) {
-    // print("updating token  : $tokenResponse");
     await UserDetailsSharedPref.setToken(newToken);
     await UserDetailsSharedPref.setUserName(username);
-    // print("Getting token $newToken");
     return newToken;
   }
   return currentToken;
@@ -25,17 +23,20 @@ Future<String> getJwtToken(String username, String password) async {
 Future<Map<String, dynamic>?> userLoginWithToken(
     String username, String password, BuildContext context, WidgetRef ref
     ) async {
-  String? token = await UserDetailsSharedPref.getUserToken();
-  if(token!.isEmpty) {
-    var loginResp =
-    await ref.read(wordsFromAPIProvider).userLogin(username, password);
-    if (loginResp != null && loginResp["access"] != null) {
-      print("User saved");
+  try{
+    var loginResp = await ref.read(wordsFromAPIProvider).getToken(username, password);
+    if(loginResp != null && loginResp["access"] != null) {
+      String newToken = loginResp["access"];
+      await UserDetailsSharedPref.setToken(newToken);
+      await UserDetailsSharedPref.setUserName(username);
       ref.read(usernameProvider.notifier).state = username;
       print("Username $username, is setting for usernameProvider");
-      print("resp is ${loginResp}");
       return loginResp;
+
     }
+  }
+  catch(e){
+    print("Error logging:- $e");
   }
   return null;
 }
