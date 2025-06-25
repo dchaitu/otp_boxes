@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:otp_boxes/constants/colors.dart';
 import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/screens/login_screen.dart';
 
@@ -27,22 +28,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               TextField(
                 decoration: const InputDecoration(
-                    hintText: "User Name"),
+                    hintText: "UserName", prefixIcon: Icon(Icons.person)),
                 controller: userController,
+
               ),
               TextField(
                 decoration: const InputDecoration(
                   hintText: "Email",
+                  prefixIcon: Icon(Icons.email)
                 ),
                 controller: emailController,
               ),
               TextField(
                 decoration: const InputDecoration(
                   hintText: "Password",
+                  prefixIcon: Icon(Icons.lock),
                 ),
                 obscureText: true,
                 controller: passwordController,
               ),
+              SizedBox(height: 10),
 
               SizedBox(
                 width: double.infinity,
@@ -61,7 +66,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   });
 
                 },
-                    child: const Text("Register")),
+                    style:ButtonStyle(backgroundColor:WidgetStateProperty.all(correctGreen)),
+                    child: const Text("Register",style: TextStyle(color: Colors.white))),
               )
             ],
           ),

@@ -22,6 +22,9 @@ class AuthService {
       // Initialize SharedPreferences if not already initialized
       await UserDetailsSharedPref.init();
       
+      // Sign out first to ensure a clean state
+      await _googleSignIn.signOut();
+      
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       

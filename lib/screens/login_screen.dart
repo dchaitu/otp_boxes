@@ -12,8 +12,6 @@ import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
 import '../constants/colors.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-
-
   const LoginScreen({super.key});
 
   @override
@@ -27,7 +25,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    token = UserDetailsSharedPref.getUserToken()?? "";
+    token = UserDetailsSharedPref.getUserToken() ?? "";
     checkLoginStatus();
   }
 
@@ -40,30 +38,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: const Text('Login Page'),
+        appBar: AppBar(
+          title: const Text('Login Page'),
         ),
         body: Padding(
           padding: const EdgeInsets.all(30),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextFormField(
-                    decoration: const InputDecoration(
-                        hintText: "UserName",
-                      prefixIcon: Icon(Icons.person)
-                    ),
-                    controller: userController,
-                    validator: (value)=> value!.isEmpty? "Enter username":null,
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFormField(
+                  decoration: const InputDecoration(
+                      hintText: "UserName", prefixIcon: Icon(Icons.person)),
+                  controller: userController,
+                  validator: (value) =>
+                      value!.isEmpty ? "Enter username" : null,
+                ),
+                TextFormField(
+                  decoration: InputDecoration(
                       hintText: "Password",
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(onPressed: () {
@@ -113,19 +111,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           }
                           else{
 
-                            // Map<String, dynamic>? tokenResponse = await userLoginWithToken(username, password, context, ref);
-                            // print("tokenResponse in login screen  $tokenResponse");
-                            // await UserDetailsSharedPref.setToken(newTok.toString());
-                            // print("New token is ${UserDetailsSharedPref.getUserToken()}");
-                            // Future.delayed(Duration.zero, (){
-                            //   Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //       builder: (context) =>
-                            //       const KeyboardListenerWidget(),
-                            //     ),
-                            //   );
-                            // });
 
                             await Future.delayed(Duration(milliseconds: 100)); // optional but helps in some cases
 
@@ -222,6 +207,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     }
   }
+
   Future<void> checkLoginStatus() async {
     String? storedToken = await UserDetailsSharedPref.getUserToken();
 
@@ -233,17 +219,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
     }
   }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
