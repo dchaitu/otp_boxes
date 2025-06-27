@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:otp_boxes/constants/variables.dart';
 import 'package:otp_boxes/main.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 
@@ -9,14 +10,7 @@ class ApiService {
   final String token;
   ApiService({required this.token});
 
-  String mainUrl = 'https://jctmglxoe8.execute-api.us-east-1.amazonaws.com/testing';
-  String get authApiUrl => '$mainUrl/api/token/';
-  String get wordUrl => '$mainUrl/word/';
-  String get loginUrl => '$mainUrl/login/';
-  String get signUpUrl => '$mainUrl/signup';
-  String get guessedWordUrl => '$mainUrl/guess/';
-  String get correctWordUrl => '$mainUrl/correct/';
-  // String token = '';
+
 
 
   Future<void> getWord() async {
@@ -180,7 +174,7 @@ class ApiService {
   Future<String> getCorrectWord() async
   {
     // print("current token: $token");
-    var currentToken = await UserDetailsSharedPref.getUserToken()??"";
+    var currentToken = UserDetailsSharedPref.getUserToken()??"";
     if (currentToken.isEmpty) {
       print("Error: Token is empty or null.");
       return "";

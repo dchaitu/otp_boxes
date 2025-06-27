@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/colors.dart';
+import 'package:otp_boxes/constants/variables.dart';
 import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
@@ -10,10 +13,10 @@ class UsernameScreen extends ConsumerStatefulWidget {
   final String googleId;
 
   const UsernameScreen({
-    Key? key,
+    super.key,
     required this.email,
     required this.googleId,
-  }) : super(key: key);
+  });
 
   @override
   _UsernameScreenState createState() => _UsernameScreenState();
@@ -30,6 +33,57 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
     _usernameController.dispose();
     super.dispose();
   }
+  void _showErrorMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _submitUsername() async {
+    final username = _usernameController.text.trim();
+    if (username.isEmpty) {
+      _showErrorMessage('Please enter a username');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+
+      final response = await http.post(
+        Uri.parse(signUpUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'email': widget.email,
+          'googleId': widget.googleId,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        // Save username locally
+        await UserDetailsSharedPref.setUserName(username);
+        // Optionally save token if your API returns one
+        // await UserDetailsSharedPref.setToken(token);
+
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const KeyboardListenerWidget()),
+        );
+      } else {
+        if (!mounted) return;
+        _showErrorMessage('Failed to set username: ${response.body}');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      _showErrorMessage('Error: ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
 
   Future<void> _checkAndSubmit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -157,7 +211,7 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _checkAndSubmit,
+                  onPressed: _isLoading ? null : _submitUsername,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: correctGreen,
                     shape: RoundedRectangleBorder(

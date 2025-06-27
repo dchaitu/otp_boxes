@@ -6,7 +6,7 @@ import 'package:otp_boxes/provider/validation_providers.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 
 Future<String> getJwtToken(String username, String password) async {
-  var currentToken = await UserDetailsSharedPref.getUserToken()??"";
+  var currentToken = UserDetailsSharedPref.getUserToken()??"";
   Map<String, dynamic>? tokenResponse =
       await ApiService(token: currentToken).getToken(username, password);
   var newToken = tokenResponse!["access"];

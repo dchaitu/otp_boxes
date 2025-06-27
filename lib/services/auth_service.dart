@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:otp_boxes/constants/variables.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 
 class AuthService {
@@ -15,9 +18,34 @@ class AuthService {
       'profile',
     ],
   );
+  Future<String?> getExistingUsername(String googleId) async {
+    // Option 1: Check SharedPreferences
+    String? username = UserDetailsSharedPref.getUserName();
+    if (username != null && username.isNotEmpty && !username.contains('@')) {
+      return username; // Return username if it exists and is not an email
+    }
+
+    // Option 2: Check DynamoDB via an API call
+    try {
+      final response = await http.get(
+        Uri.parse('$mainUrl/check-user?googleId=$googleId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['username'] != null) {
+          await UserDetailsSharedPref.setUserName(data['username']);
+          return data['username'];
+        }
+      }
+    } catch (e) {
+      print('Error checking username in DynamoDB: $e');
+    }
+    return null;
+  }
 
   // Sign in with Google
-  Future<UserCredential?> signInWithGoogle() async {
+  Future<Map<String, dynamic>?> signInWithGoogle() async {
     try {
       // Initialize SharedPreferences if not already initialized
       await UserDetailsSharedPref.init();
@@ -29,9 +57,10 @@ class AuthService {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       
       if (googleUser == null) return null;
+      String? existingUsername = await getExistingUsername(googleUser.id);
 
       // Save the user's email before proceeding with authentication
-      await UserDetailsSharedPref.setUserName(googleUser.email);
+      // await UserDetailsSharedPref.setUserName(googleUser.email);
 
       // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -43,7 +72,15 @@ class AuthService {
       );
 
       // Once signed in, return the UserCredential
-      return await _auth.signInWithCredential(credential);
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      return {
+        'userCredential': userCredential,
+        'username': existingUsername,
+        'email': googleUser.email,
+        'googleId': googleUser.id,
+      };
+
     } catch (e) {
       print('Error signing in with Google: $e');
       return null;

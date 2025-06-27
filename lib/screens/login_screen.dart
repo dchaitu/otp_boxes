@@ -156,24 +156,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onPressed: () async {
                     try {
                       final authService = AuthService();
-                      final userCredential = await authService.signInWithGoogle();
+                      final result = await authService.signInWithGoogle();
 
-                      if (userCredential?.user != null) {
+                      if (result == null || result['userCredential'] == null) {
                         if (!mounted) return;
+                        _showErrorMessage('Failed to sign in with Google');
+                        return;
+                      }
+                      final userCredential = result['userCredential'];
+                      final username = result['username'];
+                      final email = result['email'];
+                      final googleId = result['googleId'];
+                      if(!mounted) return;
+                      if(username != null){
+                       Navigator.pushReplacement(
+                       context,
+                       MaterialPageRoute(
+                         builder: (context) => const KeyboardListenerWidget(),
+                       ),
+                     );
+                      }else{
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => UsernameScreen(
-                              email: userCredential!.user!.email ?? '',
-                              googleId: userCredential.user!.uid,
+                                email: email,
+                                googleId: googleId
                             ),
                           ),
                         );
-                      } else {
-                        if (!mounted) return;
-                        _showErrorMessage('Failed to sign in with Google');
+
                       }
-                    } catch (e) {
+                      } catch (e) {
                       if (!mounted) return;
                       _showErrorMessage('Error: ${e.toString()}');
                     }

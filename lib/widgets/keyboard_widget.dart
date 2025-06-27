@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/key_colors.dart';
 import 'package:otp_boxes/constants/enum.dart';

@@ -47,7 +47,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 obscureText: true,
                 controller: passwordController,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               SizedBox(
                 width: double.infinity,
@@ -62,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
                     });
                   }).onError((error, stackTrace) {
-                    print("Error:- ${error}");
+                    print("Error:- $error");
                   });
 
                 },

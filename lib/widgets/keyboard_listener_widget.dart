@@ -19,7 +19,7 @@ class _KeyboardListenerWidgetState extends ConsumerState<KeyboardListenerWidget>
   void initState() {
 
     super.initState();
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       _focusNode.requestFocus();
     });
   }
