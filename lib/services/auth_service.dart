@@ -18,31 +18,7 @@ class AuthService {
       'profile',
     ],
   );
-  Future<String?> getExistingUsername(String googleId) async {
-    // Option 1: Check SharedPreferences
-    String? username = UserDetailsSharedPref.getUserName();
-    if (username != null && username.isNotEmpty && !username.contains('@')) {
-      return username; // Return username if it exists and is not an email
-    }
 
-    // Option 2: Check DynamoDB via an API call
-    try {
-      final response = await http.get(
-        Uri.parse('$mainUrl/check-user?googleId=$googleId'),
-        headers: {'Content-Type': 'application/json'},
-      );
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['username'] != null) {
-          await UserDetailsSharedPref.setUserName(data['username']);
-          return data['username'];
-        }
-      }
-    } catch (e) {
-      print('Error checking username in DynamoDB: $e');
-    }
-    return null;
-  }
 
   // Sign in with Google
   Future<Map<String, dynamic>?> signInWithGoogle() async {
@@ -73,7 +49,8 @@ class AuthService {
 
       // Once signed in, return the UserCredential
       final userCredential = await _auth.signInWithCredential(credential);
-
+      final userCredentialAccessToken = userCredential.credential?.accessToken;
+      UserDetailsSharedPref.setToken(userCredentialAccessToken!);
       return {
         'userCredential': userCredential,
         'username': existingUsername,
@@ -87,19 +64,34 @@ class AuthService {
     }
   }
 
-  // Sign out
-  Future<void> signOut() async {
-    await _googleSignIn.signOut();
-    await _auth.signOut();
+  Future<String?> getExistingUsername(String googleId) async {
+    // Option 1: Check SharedPreferences
+    String? username = UserDetailsSharedPref.getUserName();
+    if (username != null && username.isNotEmpty && !username.contains('@')) {
+      return username; // Return username if it exists and is not an email
+    }
+
+    // Option 2: Check DynamoDB via an API call
+    try {
+      final response = await http.get(
+        Uri.parse('$mainUrl/check-user?googleId=$googleId'),
+        headers: {
+          'Content-Type': 'application/json',
+          "Accept": "application/json",
+        },
+      );
+      print("response of check user $response");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['username'] != null) {
+          await UserDetailsSharedPref.setUserName(data['username']);
+          return data['username'];
+        }
+      }
+    } catch (e) {
+      print('Error checking username in DynamoDB with lambda call: $e');
+    }
+    return null;
   }
 
-  // Check if user is signed in
-  bool isSignedIn() {
-    return _auth.currentUser != null;
-  }
-
-  // Get current user
-  User? getCurrentUser() {
-    return _auth.currentUser;
-  }
 }

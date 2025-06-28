@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/colors.dart';
 import 'package:otp_boxes/constants/variables.dart';
-import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
 
@@ -33,125 +32,79 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
     _usernameController.dispose();
     super.dispose();
   }
-  void _showErrorMessage(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(SnackBar(content: Text(message)));
-  }
+
 
   Future<void> _submitUsername() async {
-    final username = _usernameController.text.trim();
-    if (username.isEmpty) {
-      _showErrorMessage('Please enter a username');
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    try {
-
-      final response = await http.post(
-        Uri.parse(signUpUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'username': username,
-          'email': widget.email,
-          'googleId': widget.googleId,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        // Save username locally
-        await UserDetailsSharedPref.setUserName(username);
-        // Optionally save token if your API returns one
-        // await UserDetailsSharedPref.setToken(token);
-
-        if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const KeyboardListenerWidget()),
-        );
-      } else {
-        if (!mounted) return;
-        _showErrorMessage('Failed to set username: ${response.body}');
-      }
-    } catch (e) {
-      if (!mounted) return;
-      _showErrorMessage('Error: ${e.toString()}');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-
-  Future<void> _checkAndSubmit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    final username = _usernameController.text.trim();
 
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
+    print("Google ID before submitUsername: ${widget.googleId}");
 
     try {
-      final username = _usernameController.text.trim();
-      
-      // Get the API service instance
-      final apiService = ref.read(wordsFromAPIProvider);
-      
-      // Check if username exists
-      final usernameExists = await apiService.checkUsernameExists(username);
-      
-      if (usernameExists) {
-        setState(() {
-          _errorMessage = 'Username already taken. Please choose another one.';
-          _isLoading = false;
-        });
-        return;
-      }
-
-      // If username doesn't exist, create a new user with Google signup
-      final signupResult = await apiService.userSignup(
-        username,
-        widget.email,
-        widget.googleId, // Using Google ID as password
-        isGoogleSignup: true,
+      final response = await http.post(
+        Uri.parse(googleLoginUrl),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: jsonEncode({
+          "username": username,
+          "email": widget.email,
+          "googleId": widget.googleId
+        }),
       );
+      print("Username screen response: ${response.body}, ${response.statusCode}");
 
-      if (signupResult != null && signupResult['message']?.contains('created') == true) {
-        if (!mounted) return;
-        
-        // Get token for the newly created user
-        final tokenResponse = await apiService.getToken(username, widget.googleId);
-        
-        if (tokenResponse != null && tokenResponse['access'] != null) {
-          // Save token and navigate to home
-          await UserDetailsSharedPref.setToken(tokenResponse['access']);
-          await UserDetailsSharedPref.setUserName(username);
-          
+      if (response.statusCode == 201) {
+        // Save username locally
+        await UserDetailsSharedPref.setUserName(username);
+
+        // Get JWT token for the user
+        final tokenResponse = await http.post(
+          Uri.parse(jwtTokenUrl),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'username': username,
+            'password': widget.googleId, // Use googleId as password for Google users
+          }),
+        );
+
+        if (tokenResponse.statusCode == 200) {
+          final tokenData = jsonDecode(tokenResponse.body);
+          await UserDetailsSharedPref.setToken(tokenData['access']);
+
           if (!mounted) return;
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => const KeyboardListenerWidget(),
-            ),
+            MaterialPageRoute(builder: (context) => const KeyboardListenerWidget()),
           );
-          return;
+        } else {
+          setState(() {
+            _errorMessage = 'Failed to obtain token: ${tokenResponse.body}';
+            _isLoading = false;
+          });
         }
+      } else {
+        final errorData = jsonDecode(response.body);
+        setState(() {
+          _errorMessage = errorData['error'] ?? 'Failed to set username';
+          _isLoading = false;
+        });
       }
-      
-      // If we get here, something went wrong
-      setState(() {
-        _errorMessage = 'Failed to create account. Please try again.';
-        _isLoading = false;
-      });
     } catch (e) {
       setState(() {
-        _errorMessage = 'An error occurred. Please try again.';
+        _errorMessage = 'Error in submitUsername function: ${e.toString()}';
         _isLoading = false;
       });
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

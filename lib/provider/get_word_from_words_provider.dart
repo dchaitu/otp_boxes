@@ -150,27 +150,7 @@ class ApiService {
     }
   }
 
-  Future<bool> checkUsernameExists(String username) async {
-    try {
-      print("Check Username $token");
-      final response = await http.get(
-        Uri.parse('$signUpUrl?user=$username'),
-        headers: {
-          "Accept": "application/json",
-          'Authorization': 'Bearer $token'
-        },
-      );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-        return data['exists'] ?? false;
-      }
-      return false;
-    } catch (error) {
-      print("Error checking username: $error");
-      return false;
-    }
-  }
   Future<String> getCorrectWord() async
   {
     // print("current token: $token");

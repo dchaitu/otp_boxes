@@ -157,13 +157,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     try {
                       final authService = AuthService();
                       final result = await authService.signInWithGoogle();
+                      // print("result is ${result.toString()}");
 
+                      // print("accessToken is ${result?['credential'].accessToken}");
                       if (result == null || result['userCredential'] == null) {
                         if (!mounted) return;
                         _showErrorMessage('Failed to sign in with Google');
                         return;
                       }
-                      final userCredential = result['userCredential'];
                       final username = result['username'];
                       final email = result['email'];
                       final googleId = result['googleId'];
