@@ -21,12 +21,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   TextEditingController userController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _isLoading = false;
-  var token;
   @override
   void initState() {
     super.initState();
-    token = UserDetailsSharedPref.getUserToken() ?? "";
-    checkLoginStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkLoginStatus();
+    });
   }
 
   @override
@@ -116,11 +116,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           await UserDetailsSharedPref.setUserName(username);
 
                           if (!mounted) return;
-                          Navigator.pushReplacement(
-                            context,
+                          Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                              builder: (context) => const KeyboardListenerWidget(),
+                              builder: (context) =>
+                                  const KeyboardListenerWidget(),
                             ),
+                            (route) => false,
                           );
                           return;
                         }
@@ -226,13 +227,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
 
   Future<void> checkLoginStatus() async {
+    if (!mounted) return;
+    
     String? storedToken = UserDetailsSharedPref.getUserToken();
 
     if (storedToken != null && storedToken.isNotEmpty) {
-      // Verify token validity (optional: make an API call to check)
-      Navigator.pushReplacement(
-        context,
+      // Use a small delay to ensure the navigation happens after the current build phase
+      await Future.delayed(Duration.zero);
+      
+      if (!mounted) return;
+      
+      // Use pushAndRemoveUntil to clear the navigation stack
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const KeyboardListenerWidget()),
+        (route) => false,
       );
     }
   }

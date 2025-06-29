@@ -7,10 +7,11 @@ import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   // Find the Web Client ID (it should look like: xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com)
-  static const String webClientId = '415880282002-qas8bl22h74gdk4g0qjuvqpr1trdunst.apps.googleusercontent.com';
-  
+  static const String webClientId =
+      '415880282002-qas8bl22h74gdk4g0qjuvqpr1trdunst.apps.googleusercontent.com';
+
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: webClientId,
     scopes: [
@@ -19,19 +20,19 @@ class AuthService {
     ],
   );
 
-
   // Sign in with Google
   Future<Map<String, dynamic>?> signInWithGoogle() async {
     try {
       // Initialize SharedPreferences if not already initialized
       await UserDetailsSharedPref.init();
-      
+
       // Sign out first to ensure a clean state
       await _googleSignIn.signOut();
-      
+      await _auth.signOut();
+
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
+
       if (googleUser == null) return null;
       String? existingUsername = await getExistingUsername(googleUser.id);
 
@@ -39,7 +40,8 @@ class AuthService {
       // await UserDetailsSharedPref.setUserName(googleUser.email);
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -49,6 +51,7 @@ class AuthService {
 
       // Once signed in, return the UserCredential
       final userCredential = await _auth.signInWithCredential(credential);
+      print("User Credential: ${userCredential.credential}");
       final userCredentialAccessToken = userCredential.credential?.accessToken;
       UserDetailsSharedPref.setToken(userCredentialAccessToken!);
       return {
@@ -57,7 +60,6 @@ class AuthService {
         'email': googleUser.email,
         'googleId': googleUser.id,
       };
-
     } catch (e) {
       print('Error signing in with Google: $e');
       return null;
@@ -93,5 +95,4 @@ class AuthService {
     }
     return null;
   }
-
 }

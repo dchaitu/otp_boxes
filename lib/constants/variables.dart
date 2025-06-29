@@ -8,6 +8,5 @@ String get loginUrl => '$mainUrl/login/';
 String get signUpUrl => '$mainUrl/signup';
 String get guessedWordUrl => '$mainUrl/guess/';
 String get correctWordUrl => '$mainUrl/correct/';
-String get jwtTokenUrl => '$mainUrl/api/token/';
 String get checkUserUrl => '$mainUrl/check-user';
 String get googleLoginUrl => '$mainUrl/google/';

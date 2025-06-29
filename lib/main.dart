@@ -11,16 +11,17 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  WidgetsFlutterBinding.ensureInitialized();
-  await UserDetailsSharedPref.init();
-  runApp(const ProviderScope(
-      child: MainScreen(),
+  
+  await Future.wait([
+    Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
     ),
-  );
+    UserDetailsSharedPref.init(),
+  ]);
+  
+  runApp(const ProviderScope(
+    child: MainScreen(),
+  ));
 }
 
 class MainScreen extends StatelessWidget {
@@ -29,15 +30,15 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: navigatorKey, // Set global navigator key
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
       routes: {
         '/login': (context) => const LoginScreen(),
         '/game': (context) => const GameScreen(),
-        '/settings':(context) => const SettingsScreen()
+        '/settings': (context) => const SettingsScreen(),
       },
-      home: const LoginScreen(),
+      // Remove the 'home' property since we're using initialRoute
     );
   }
 }

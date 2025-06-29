@@ -14,21 +14,27 @@ class ApiService {
 
 
   Future<void> getWord() async {
-    // print("current token: $token");
+    final currentToken = UserDetailsSharedPref.getUserToken() ?? "";
+    print("current token: $currentToken");
+    
+    if (currentToken.isEmpty) {
+      print("Error: No token available");
+      return;
+    }
+    
     final response = await http.get(Uri.parse(wordUrl),
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        'Authorization': 'Bearer $token'
+        'Authorization': 'Bearer $currentToken'
       },
     );
+    print("Headers: ${response.headers}");
+    print("Response getWord status code: ${response.body}");
     if (response.statusCode == 200) {
       print("Word fetched successfully: ${response.body}");
     } else {
       print("Error fetching word: ${response.statusCode} - ${response.body}");
-    // token may expired need to remove it
-    //   print("UserToken is ${UserDetailsSharedPref.getUserToken()} ");
-      // UserDetailsSharedPref.setToken('');
     }
 
   }
@@ -68,13 +74,20 @@ class ApiService {
   Future<Map<String, dynamic>?> storeCurrentWord(String username, String currentWord) async
   {
     print("getCurrentWord $username, $currentWord");
+    final currentToken = UserDetailsSharedPref.getUserToken() ?? "";
+    
+    if (currentToken.isEmpty) {
+      print("Error: No token available");
+      return null;
+    }
+    
     try{
       var response = await http.post(
           Uri.parse(guessedWordUrl),
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            'Authorization': 'Bearer $token'
+            'Authorization': 'Bearer $currentToken'
           },
           body: jsonEncode({"username": username, "content": currentWord}),
       );
@@ -124,7 +137,7 @@ class ApiService {
   Future<Map<String, dynamic>?> userSignup(String username, String email, String password, {bool isGoogleSignup = false}) async {
     try {
       final response = await http.post(
-        Uri.parse('$signUpUrl/'),
+        Uri.parse(signUpUrl),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -153,7 +166,6 @@ class ApiService {
 
   Future<String> getCorrectWord() async
   {
-    // print("current token: $token");
     var currentToken = UserDetailsSharedPref.getUserToken()??"";
     if (currentToken.isEmpty) {
       print("Error: Token is empty or null.");

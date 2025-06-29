@@ -66,7 +66,7 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
 
         // Get JWT token for the user
         final tokenResponse = await http.post(
-          Uri.parse(jwtTokenUrl),
+          Uri.parse(authApiUrl),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'username': username,
