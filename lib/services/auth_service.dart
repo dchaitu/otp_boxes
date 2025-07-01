@@ -32,8 +32,8 @@ class AuthService {
         print('Google Sign-In cancelled');
         return null;
       }
+
       Map<String, dynamic>? existingUsername = await getExistingUsername(googleUser.id);
-      print("Existing username: $existingUsername");
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -46,7 +46,6 @@ class AuthService {
 
       // Once signed in, return the UserCredential
       final userCredential = await _auth.signInWithCredential(credential);
-      print("User Credential: ${userCredential.credential}");
 
       return {
         'userCredential': userCredential,

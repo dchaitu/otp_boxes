@@ -52,31 +52,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
-                decoration: InputDecoration(
-                  hintText: "UserName",
-                  prefixIcon: const Icon(Icons.person),
-                ),
-                controller: userController,
-                validator: (value) => value!.isEmpty ? "Enter username" : null,
-                  style: Theme.of(context).textTheme.bodyMedium
-              ),
+                  decoration: InputDecoration(
+                    hintText: "UserName",
+                    prefixIcon: Icon(Icons.person,
+                        color: Theme.of(context).textTheme.bodyMedium?.color),
+                    hintStyle: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color),
+                  ),
+                  controller: userController,
+                  validator: (value) =>
+                      value!.isEmpty ? "Enter username" : null,
+                  style: Theme.of(context).textTheme.bodyMedium),
               TextFormField(
-                decoration: InputDecoration(
-                    hintText: "Password",
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                        onPressed: () {
-                          print(
-                              "Show password is ${ref.read(showObscureTextProvider)}");
-                          ref.read(showObscureTextProvider.notifier).state =
-                              !ref.read(showObscureTextProvider);
-                        },
-                        icon: const Icon(Icons.remove_red_eye))),
-                obscureText: ref.watch(showObscureTextProvider),
-                controller: passwordController,
-                validator: (value) => value!.isEmpty ? "Enter password" : null,
-                  style: Theme.of(context).textTheme.bodyMedium
-              ),
+                  decoration: InputDecoration(
+                      hintText: "Password",
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).textTheme.bodyMedium?.color),
+                      prefixIcon: Icon(Icons.lock,
+                          color: Theme.of(context).textTheme.bodyMedium?.color),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            print(
+                                "Show password is ${ref.read(showObscureTextProvider)}");
+                            ref.read(showObscureTextProvider.notifier).state =
+                                !ref.read(showObscureTextProvider);
+                          },
+                          icon: Icon(Icons.remove_red_eye,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color))),
+                  obscureText: ref.watch(showObscureTextProvider),
+                  controller: passwordController,
+                  validator: (value) =>
+                      value!.isEmpty ? "Enter password" : null,
+                  style: Theme.of(context).textTheme.bodyMedium),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 20),
                 child: SizedBox(

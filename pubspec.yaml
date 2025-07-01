@@ -105,3 +105,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/wordle.jpg"
+  adaptive icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/logo.jpg"

@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:otp_boxes/constants/colors.dart';
 import 'package:otp_boxes/constants/variables.dart';
-import 'package:otp_boxes/provider/theme_provider.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
 
@@ -109,14 +107,14 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = ref.watch(themeProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Choose a Username'),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(30.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -125,25 +123,31 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
             children: [
               Text(
                 'Welcome!',
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(
                 'Choose a username to continue',
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
               TextFormField(
                 controller: _usernameController,
-                decoration: const InputDecoration(
+                style: Theme.of(context).textTheme.bodyMedium,
+                decoration: InputDecoration(
                   labelText: 'Username',
-                  prefixIcon: Icon(Icons.person_outline),
-                  border: OutlineInputBorder(),
+                  hintText: 'Enter your username',
+                  border: const OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  errorText: _errorMessage,
+                  prefixIcon: const Icon(Icons.person_outline),
                 ),
-                textCapitalization: TextCapitalization.none,
-                autocorrect: false,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a username';
@@ -151,36 +155,36 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
                   if (value.length < 3) {
                     return 'Username must be at least 3 characters';
                   }
+                  if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+                    return 'Only letters, numbers and underscores are allowed';
+                  }
                   return null;
                 },
               ),
-              if (_errorMessage != null) ...{
-                const SizedBox(height: 16),
-                Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-              },
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submitUsername,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: correctGreen,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
                       : const Text(
                           'Continue',
                           style: TextStyle(fontSize: 16),
                         ),
+                        ),
                 ),
-              ),
             ],
           ),
         ),

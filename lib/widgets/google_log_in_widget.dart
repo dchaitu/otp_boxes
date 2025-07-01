@@ -27,7 +27,7 @@ class _GoogleLogInWidgetState extends State<GoogleLogInWidget> {
           try {
             final authService = AuthService();
             final result = await authService.signInWithGoogle();
-            print("Google Log in result is $result");
+            // print("Google Log in result is $result");
 
             if (result == null || result['userCredential'] == null) {
               if (!mounted) return;
