@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/game_logic.dart';
 import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
-import 'package:otp_boxes/provider/theme_provider.dart';
-import 'package:otp_boxes/themes/themes.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_widget.dart';
 import 'package:otp_boxes/widgets/word_grid_widget.dart';
@@ -43,13 +41,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = ref.watch(themeProvider);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Wordle',
-      theme: isDarkTheme ? darkTheme : lightTheme,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text("Wordle"),
           centerTitle: true,
@@ -73,7 +66,6 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             );
           },
         ),
-      ),
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otp_boxes/constants/colors.dart';
 import 'package:otp_boxes/constants/variables.dart';
+import 'package:otp_boxes/provider/theme_provider.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
 
@@ -108,6 +109,7 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = ref.watch(themeProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Choose a Username'),
