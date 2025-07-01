@@ -169,7 +169,7 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
       keyColors: resetColors,
       backBounce:false
     );
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       focusNode.requestFocus();
     });
 
@@ -184,18 +184,17 @@ class TextInputNotifier extends StateNotifier<WordCheck> {
 
 final textInputProvider =
     StateNotifierProvider<TextInputNotifier, WordCheck>((ref) {
-
   return TextInputNotifier(
     wordCheck: WordCheck(
-        userWords: [],
-        currentWord: '',
-        isWon: false,
-        isWordEntered: false,
-        noOfChances: 6,
-        currentRow: 0,
-        tilesEntered: [],
-        keyColors: keyColorsMap,
-        backBounce:false),
+      userWords: [],
+      currentWord: '',
+      isWon: false,
+      isWordEntered: false,
+      noOfChances: 6,
+      currentRow: 0,
+      tilesEntered: [],
+      keyColors: keyColorsMap,
+      backBounce: false,
+    ),
   );
 });
-

@@ -8,9 +8,7 @@ import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Find the Web Client ID (it should look like: xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com)
-  static const String webClientId =
-      '415880282002-qas8bl22h74gdk4g0qjuvqpr1trdunst.apps.googleusercontent.com';
+  static const String webClientId = WEB_CLIENT_ID;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: webClientId,
@@ -25,21 +23,18 @@ class AuthService {
     try {
       // Initialize SharedPreferences if not already initialized
       await UserDetailsSharedPref.init();
-
-      // Sign out first to ensure a clean state
       await _googleSignIn.signOut();
       await _auth.signOut();
 
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        print('Google Sign-In cancelled');
+        return null;
+      }
+      Map<String, dynamic>? existingUsername = await getExistingUsername(googleUser.id);
+      print("Existing username: $existingUsername");
 
-      if (googleUser == null) return null;
-      String? existingUsername = await getExistingUsername(googleUser.id);
-
-      // Save the user's email before proceeding with authentication
-      // await UserDetailsSharedPref.setUserName(googleUser.email);
-
-      // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
@@ -52,11 +47,11 @@ class AuthService {
       // Once signed in, return the UserCredential
       final userCredential = await _auth.signInWithCredential(credential);
       print("User Credential: ${userCredential.credential}");
-      final userCredentialAccessToken = userCredential.credential?.accessToken;
-      UserDetailsSharedPref.setToken(userCredentialAccessToken!);
+
       return {
         'userCredential': userCredential,
-        'username': existingUsername,
+        'username': existingUsername?['username'],
+        'token': existingUsername?['token'],
         'email': googleUser.email,
         'googleId': googleUser.id,
       };
@@ -66,17 +61,17 @@ class AuthService {
     }
   }
 
-  Future<String?> getExistingUsername(String googleId) async {
-    // Option 1: Check SharedPreferences
+  Future<Map<String, dynamic>?> getExistingUsername(String googleId) async {
     String? username = UserDetailsSharedPref.getUserName();
-    if (username != null && username.isNotEmpty && !username.contains('@')) {
-      return username; // Return username if it exists and is not an email
+    String? token = UserDetailsSharedPref.getUserToken();
+    if (username != null && username.isNotEmpty && !username.contains('@')&& token != null && token.isNotEmpty) {
+      print('Found user in SharedPreferences: $username');
+      return {'username': username, 'token': token, 'source': 'shared_prefs'};
     }
 
-    // Option 2: Check DynamoDB via an API call
     try {
       final response = await http.get(
-        Uri.parse('$mainUrl/check-user?googleId=$googleId'),
+        Uri.parse('$checkUserUrl?googleId=$googleId'),
         headers: {
           'Content-Type': 'application/json',
           "Accept": "application/json",
@@ -86,10 +81,36 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['username'] != null) {
-          await UserDetailsSharedPref.setUserName(data['username']);
-          return data['username'];
+          final tokenResponse = await http.post(
+            Uri.parse(authApiUrl),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({
+              'username': data['username'],
+              'password': googleId,
+            }),
+          );
+          if (tokenResponse.statusCode == 200) {
+            final tokenData = jsonDecode(tokenResponse.body);
+            await UserDetailsSharedPref.setUserName(data['username']);
+            await UserDetailsSharedPref.setToken(tokenData['access']);
+            print('Found user in DynamoDB: ${data['username']}');
+            return {
+              'username': data['username'],
+              'token': tokenData['access'],
+              'source': 'dynamodb'
+            };
+          } else {
+            print('Failed to get token: ${tokenResponse.statusCode} ${tokenResponse.body}');
+            return null;
+          }
         }
+      }else {
+        print('Check user failed: ${response.statusCode} ${response.body}');
       }
+
     } catch (e) {
       print('Error checking username in DynamoDB with lambda call: $e');
     }

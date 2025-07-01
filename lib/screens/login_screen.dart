@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:otp_boxes/provider/validation_providers.dart';
 import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
 import 'package:otp_boxes/screens/register_screen.dart';
-import 'package:otp_boxes/screens/username_screen.dart';
-import 'package:otp_boxes/services/auth_service.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
+import 'package:otp_boxes/widgets/google_log_in_widget.dart';
 import 'package:otp_boxes/widgets/keyboard_listener_widget.dart';
 import '../constants/colors.dart';
+import '../constants/utils.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -34,18 +33,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     userController.dispose();
     passwordController.dispose();
     super.dispose();
-  }
-
-  // Helper method to show error message safely
-  void _showErrorMessage(String message) {
-    if (!mounted) return;
-
-    // Ensure we have a Scaffold in the widget tree
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    scaffoldMessenger.clearSnackBars();
-    scaffoldMessenger.showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   @override
@@ -109,10 +96,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             .read(wordsFromAPIProvider)
                             .userLogin(username, password);
                         print("Login Response: $loginResponse");
-                        
-                        if (loginResponse != null && loginResponse["access"] != null) {
+
+                        if (loginResponse != null &&
+                            loginResponse["access"] != null) {
                           // Save token and username from login response
-                          await UserDetailsSharedPref.setToken(loginResponse['access']!);
+                          await UserDetailsSharedPref.setToken(
+                              loginResponse['access']!);
                           await UserDetailsSharedPref.setUserName(username);
 
                           if (!mounted) return;
@@ -128,11 +117,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         // If we get here, login failed
                         if (!mounted) return;
-                        _showErrorMessage('Invalid username or password');
+                        showErrorMessage(
+                            'Invalid username or password', context, mounted);
                       } catch (e) {
                         if (!mounted) return;
-                        _showErrorMessage(
-                            'An error occurred. Please try again.');
+                        showErrorMessage('An error occurred. Please try again.',
+                            context, mounted);
                       } finally {
                         if (mounted) {
                           setState(() {
@@ -149,63 +139,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  icon: const FaIcon(FontAwesomeIcons.google, color: Colors.white),
-                  onPressed: () async {
-                    try {
-                      final authService = AuthService();
-                      final result = await authService.signInWithGoogle();
-                      // print("result is ${result.toString()}");
-
-                      // print("accessToken is ${result?['credential'].accessToken}");
-                      if (result == null || result['userCredential'] == null) {
-                        if (!mounted) return;
-                        _showErrorMessage('Failed to sign in with Google');
-                        return;
-                      }
-                      final username = result['username'];
-                      final email = result['email'];
-                      final googleId = result['googleId'];
-                      if(!mounted) return;
-                      if(username != null){
-                       Navigator.pushReplacement(
-                       context,
-                       MaterialPageRoute(
-                         builder: (context) => const KeyboardListenerWidget(),
-                       ),
-                     );
-                      }else{
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => UsernameScreen(
-                                email: email,
-                                googleId: googleId
-                            ),
-                          ),
-                        );
-
-                      }
-                      } catch (e) {
-                      if (!mounted) return;
-                      _showErrorMessage('Error: ${e.toString()}');
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[700],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  label: const Text(
-                    'Sign In with Google',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-              ),
+              const GoogleLogInWidget(),
               const SizedBox(height: 20),
               TextButton(
                 onPressed: () {
@@ -225,18 +159,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-
   Future<void> checkLoginStatus() async {
     if (!mounted) return;
-    
+
     String? storedToken = UserDetailsSharedPref.getUserToken();
 
     if (storedToken != null && storedToken.isNotEmpty) {
       // Use a small delay to ensure the navigation happens after the current build phase
       await Future.delayed(Duration.zero);
-      
+
       if (!mounted) return;
-      
+
       // Use pushAndRemoveUntil to clear the navigation stack
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const KeyboardListenerWidget()),

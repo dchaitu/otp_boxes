@@ -11,35 +11,33 @@ class ApiService {
   ApiService({required this.token});
 
 
-
-
   Future<void> getWord() async {
     final currentToken = UserDetailsSharedPref.getUserToken() ?? "";
     print("current token: $currentToken");
-    
+
     if (currentToken.isEmpty) {
       print("Error: No token available");
       return;
     }
-    
-    final response = await http.get(Uri.parse(wordUrl),
+
+    final response = await http.get(
+      Uri.parse(wordUrl),
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
         'Authorization': 'Bearer $currentToken'
       },
     );
-    print("Headers: ${response.headers}");
     print("Response getWord status code: ${response.body}");
     if (response.statusCode == 200) {
       print("Word fetched successfully: ${response.body}");
     } else {
       print("Error fetching word: ${response.statusCode} - ${response.body}");
     }
-
   }
 
-  Future<Map<String,dynamic>?> getToken(String username,String password) async{
+  Future<Map<String, dynamic>?> getToken(
+      String username, String password) async {
     var tokenResponse = await http.post(
       Uri.parse(authApiUrl),
       headers: {
@@ -56,49 +54,42 @@ class ApiService {
       }
       print("access token is  ${tokenDict["access"]}");
       return tokenDict;
-    }
-
-    else if(tokenResponse.statusCode ==401){
-    //   Need to write code to redirect
-      navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
-
-    }
-
-    else {
+    } else if (tokenResponse.statusCode == 401) {
+      //   Need to write code to redirect
+      navigatorKey.currentState!
+          .pushNamedAndRemoveUntil('/login', (route) => false);
+    } else {
       print("Error: ${tokenResponse.statusCode} - ${tokenResponse.body}");
     }
     return null;
-
   }
 
-  Future<Map<String, dynamic>?> storeCurrentWord(String username, String currentWord) async
-  {
+  Future<Map<String, dynamic>?> storeCurrentWord(
+      String username, String currentWord) async {
     print("getCurrentWord $username, $currentWord");
     final currentToken = UserDetailsSharedPref.getUserToken() ?? "";
-    
+
     if (currentToken.isEmpty) {
       print("Error: No token available");
       return null;
     }
-    
-    try{
+
+    try {
       var response = await http.post(
-          Uri.parse(guessedWordUrl),
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            'Authorization': 'Bearer $currentToken'
-          },
-          body: jsonEncode({"username": username, "content": currentWord}),
+        Uri.parse(guessedWordUrl),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          'Authorization': 'Bearer $currentToken'
+        },
+        body: jsonEncode({"username": username, "content": currentWord}),
       );
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;
-      }else if(response.statusCode ==401){
-        navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
-
-      }
-
-      else {
+      } else if (response.statusCode == 401) {
+        navigatorKey.currentState!
+            .pushNamedAndRemoveUntil('/login', (route) => false);
+      } else {
         print("Error: ${response.statusCode} - ${response.body}");
       }
     } catch (error) {
@@ -108,19 +99,16 @@ class ApiService {
     return null;
   }
 
-  Future<Map<String, dynamic>?> userLogin(String username, String password) async
-  {
-    try{
+  Future<Map<String, dynamic>?> userLogin(
+      String username, String password) async {
+    try {
       var response = await http.post(Uri.parse(loginUrl),
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
             // "Token": token
           },
-          body: jsonEncode({"username": username, "password": password})
-
-      );
-
+          body: jsonEncode({"username": username, "password": password}));
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;
@@ -134,7 +122,9 @@ class ApiService {
     return null;
   }
 
-  Future<Map<String, dynamic>?> userSignup(String username, String email, String password, {bool isGoogleSignup = false}) async {
+  Future<Map<String, dynamic>?> userSignup(
+      String username, String email, String password,
+      {bool isGoogleSignup = false}) async {
     try {
       final response = await http.post(
         Uri.parse(signUpUrl),
@@ -163,15 +153,12 @@ class ApiService {
     }
   }
 
-
-  Future<String> getCorrectWord() async
-  {
-    var currentToken = UserDetailsSharedPref.getUserToken()??"";
+  Future<String> getCorrectWord() async {
+    var currentToken = UserDetailsSharedPref.getUserToken() ?? "";
     if (currentToken.isEmpty) {
       print("Error: Token is empty or null.");
       return "";
-    }
-    else {
+    } else {
       final response = await http.get(
         Uri.parse(correctWordUrl),
         headers: {
@@ -190,12 +177,9 @@ class ApiService {
       return "";
     }
   }
-
 }
-
 
 final wordsFromAPIProvider = StateProvider<ApiService>((ref) {
   final token = UserDetailsSharedPref.getUserToken();
   return ApiService(token: token ?? "");
 });
-

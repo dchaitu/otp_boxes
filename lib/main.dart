@@ -38,7 +38,6 @@ class MainScreen extends StatelessWidget {
         '/game': (context) => const GameScreen(),
         '/settings': (context) => const SettingsScreen(),
       },
-      // Remove the 'home' property since we're using initialRoute
     );
   }
 }

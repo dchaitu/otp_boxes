@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/game_logic.dart';
 import 'package:otp_boxes/provider/get_word_from_words_provider.dart';
-import 'package:otp_boxes/provider/text_input_provider.dart';
 import 'package:otp_boxes/provider/theme_provider.dart';
-import 'package:otp_boxes/screens/settings_screen.dart';
-import 'package:otp_boxes/screens/stats_dialog.dart';
 import 'package:otp_boxes/themes/themes.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:otp_boxes/widgets/keyboard_widget.dart';
 import 'package:otp_boxes/widgets/word_grid_widget.dart';
+
+import '../widgets/actions_widget.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
   const GameScreen({super.key});
@@ -44,9 +44,6 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = ref.watch(themeProvider);
-    final bool isWonTextInput = ref.watch(textInputProvider).isWon;
-    final int noOfChances = ref.read(textInputProvider).noOfChances;
-    print("noOfChances $noOfChances");
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -56,70 +53,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         appBar: AppBar(
           title: const Text("Wordle"),
           centerTitle: true,
-          actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.lightbulb)),
-            Builder(builder: (BuildContext context) {
-              return IconButton(
-                onPressed: () {
-                  showDialog(
-                      context: context, builder: (_) => const StatsDialog());
-                },
-                icon: const Icon(Icons.bar_chart_outlined),
-              );
-            }),
-            IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.question_mark_rounded)),
-            Builder(
-              builder: (BuildContext context) {
-                return IconButton(
-                    icon: const Icon(Icons.settings),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const SettingsScreen()));
-                    });
-              },
-            )
-          ],
+          actions: actionsWidget(),
         ),
         body: Builder(
           builder: (BuildContext newContext) {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
-              if (isWonTextInput&& noOfChances>=4) {
-                showPrompt(newContext, "IMPRESSIVE!");
-                Future.delayed(const Duration(milliseconds: 3000), () {
-                  handleCaseCorrect(newContext);
-                });
-              }
-              else if (isWonTextInput&& noOfChances==3) {
-                showPrompt(newContext, "SPLENDID!");
-                Future.delayed(const Duration(milliseconds: 3000), () {
-                  handleCaseCorrect(newContext);
-                });
-              }
-              else if (isWonTextInput&& noOfChances==2) {
-                showPrompt(newContext, "NICE!");
-                Future.delayed(const Duration(milliseconds: 3000), () {
-                  handleCaseCorrect(newContext);
-                });
-              }
-              else if (isWonTextInput&& noOfChances==1) {
-                showPrompt(newContext, "EEPE!");
-                Future.delayed(const Duration(milliseconds: 3000), () {
-                  handleCaseCorrect(newContext);
-                });
-              }
-              if (noOfChances == 0) {
-                print("Prompt should display");
-                showPrompt(newContext, "OOPS!");
-                Future.delayed(const Duration(milliseconds: 3000), () async {
-                var answer = await ref.read(wordsFromAPIProvider).getCorrectWord();
-                print("Word is $answer");
-                  showPrompt(newContext, answer);
-                  handleCaseCorrect(newContext);
-                });
-
-              }
+              gameConditions(ref, newContext);
             });
             return const Center(
               child: Column(
@@ -139,28 +78,5 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   }
 
 
-  void handleCaseCorrect(BuildContext context) {
-    Future.delayed(const Duration(seconds: 2), () {
-      showDialog(context: context, builder: (context) => const StatsDialog());
-    });
-  }
 
-  void showPrompt(BuildContext context, String message) {
-    showDialog(
-        barrierDismissible: false,
-        barrierColor: Colors.transparent,
-        context: context,
-        builder: (context) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          if (Navigator.canPop(context)) {
-            Navigator.of(context, rootNavigator: true).maybePop();
-          }
-        });
-      });
-          return AlertDialog(
-            title: Text(message, textAlign: TextAlign.center),
-          );
-        });
-  }
 }

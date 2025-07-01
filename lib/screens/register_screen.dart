@@ -54,9 +54,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 height: 50,
                 child: ElevatedButton(onPressed: (){
                   ApiService(token: '').userSignup(
-                      userController.text.toString(),
-                      emailController.text.toString(),
-                      passwordController.text.toString()).then((value) {
+                      userController.text.trim().toString(),
+                      emailController.text.trim().toString(),
+                      passwordController.text.trim().toString()).then((value) {
                     setState(() {
                       // login = value!;
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
