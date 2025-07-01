@@ -25,30 +25,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     hintText: "UserName",
-                    hintStyle: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium?.color),
-                    prefixIcon: Icon(Icons.person,
-                        color: Theme.of(context).textTheme.bodyMedium?.color)),
+                    prefixIcon: Icon(Icons.person)),
                 controller: userController,
                 style: Theme.of(context).textTheme.bodyMedium),
             TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     hintText: "Email",
-                    hintStyle: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium?.color),
-                    prefixIcon: Icon(Icons.email,
-                        color: Theme.of(context).textTheme.bodyMedium?.color)),
+                    prefixIcon: Icon(Icons.email)),
                 controller: emailController,
                 style: Theme.of(context).textTheme.bodyMedium),
             TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Password",
-                  hintStyle: TextStyle(
-                      color: Theme.of(context).textTheme.bodyMedium?.color),
-                  prefixIcon: Icon(Icons.lock,
-                      color: Theme.of(context).textTheme.bodyMedium?.color),
+                  prefixIcon: Icon(Icons.lock),
                 ),
                 obscureText: true,
                 controller: passwordController,

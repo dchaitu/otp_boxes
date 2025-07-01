@@ -6,6 +6,8 @@ import 'package:otp_boxes/screens/settings_screen.dart';
 import 'package:otp_boxes/utils/user_details_shared_pref.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:otp_boxes/provider/theme_provider.dart';
+import 'package:otp_boxes/themes/themes.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 
@@ -24,14 +26,19 @@ Future<void> main() async {
   ));
 }
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkTheme = ref.watch(themeProvider);
+
+
     return MaterialApp(
       navigatorKey: navigatorKey,
+      theme: isDarkTheme ? darkTheme : lightTheme,
       debugShowCheckedModeBanner: false,
+      title: 'Flutter Wordle',
       initialRoute: '/login',
       routes: {
         '/login': (context) => const LoginScreen(),

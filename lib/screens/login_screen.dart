@@ -20,6 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   TextEditingController userController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -51,10 +52,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
-                decoration: const InputDecoration(
-                    hintText: "UserName", prefixIcon: Icon(Icons.person)),
+                decoration: InputDecoration(
+                  hintText: "UserName",
+                  prefixIcon: const Icon(Icons.person),
+                ),
                 controller: userController,
                 validator: (value) => value!.isEmpty ? "Enter username" : null,
+                  style: Theme.of(context).textTheme.bodyMedium
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -71,6 +75,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 obscureText: ref.watch(showObscureTextProvider),
                 controller: passwordController,
                 validator: (value) => value!.isEmpty ? "Enter password" : null,
+                  style: Theme.of(context).textTheme.bodyMedium
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 20),
