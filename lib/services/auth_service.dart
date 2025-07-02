@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -38,13 +39,11 @@ class AuthService {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // Once signed in, return the UserCredential
       final userCredential = await _auth.signInWithCredential(credential);
 
       return {
@@ -69,11 +68,19 @@ class AuthService {
     }
 
     try {
+      final appCheckToken = await FirebaseAppCheck.instance.getToken();
+      print("App Check token: $appCheckToken");
+      if (appCheckToken == null) {
+        print("Error: No App Check token available");
+        return null;
+      }
+
       final response = await http.get(
         Uri.parse('$checkUserUrl?googleId=$googleId'),
         headers: {
           'Content-Type': 'application/json',
           "Accept": "application/json",
+          "X-Firebase-AppCheck": appCheckToken
         },
       );
       print("response of check user $response");
@@ -85,6 +92,7 @@ class AuthService {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              "X-Firebase-AppCheck": appCheckToken
             },
             body: jsonEncode({
               'username': data['username'],
