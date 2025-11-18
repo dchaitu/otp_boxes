@@ -1,13 +1,51 @@
 {
   "project_info": {
-    "project_number": "415880282002",
-    "project_id": "wordle-services",
-    "storage_bucket": "wordle-services.firebasestorage.app"
+    "project_number": "873429164398",
+    "project_id": "fir-auth-fa4df",
+    "storage_bucket": "fir-auth-fa4df.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:415880282002:android:d99b5c82fdb826ee080b4b",
+        "mobilesdk_app_id": "1:873429164398:android:c5e573b1c333a29479617f",
+        "android_client_info": {
+          "package_name": "com.example.firebase_auth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALbrdQoFup3SR4pEjyTOJMIsQ7zE22c34"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873429164398:android:bf8ef0611c88fd9979617f",
+        "android_client_info": {
+          "package_name": "com.example.firebase_authentication_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALbrdQoFup3SR4pEjyTOJMIsQ7zE22c34"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873429164398:android:abd281341f95419779617f",
         "android_client_info": {
           "package_name": "com.example.otp_boxes"
         }
@@ -15,7 +53,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBaHzKnf8Z9BeoEDPMbaxp_yU3NhNUY-Vs"
+          "current_key": "AIzaSyALbrdQoFup3SR4pEjyTOJMIsQ7zE22c34"
         }
       ],
       "services": {

@@ -31,7 +31,7 @@ class ApiService {
 
     if (currentToken.isEmpty) {
       print("Error: No token available");
-      navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
+      // navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
       return;
     }
 
@@ -41,7 +41,7 @@ class ApiService {
       ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
         const SnackBar(content: Text('Failed to verify app integrity. Please try again later.')),
       );
-      navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
+      // navigatorKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
       return;
     }
 
@@ -61,8 +61,8 @@ class ApiService {
       } else {
         print("Error fetching word: ${response.statusCode} - ${response.body}");
         if (response.statusCode == 401 || response.statusCode == 403) {
-          navigatorKey.currentState!
-              .pushNamedAndRemoveUntil('/login', (route) => false);
+          // navigatorKey.currentState!
+          //     .pushNamedAndRemoveUntil('/login', (route) => false);
         }
       }
     }

@@ -1,6 +1,8 @@
+
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:otp_boxes/constants/variables.dart';
 import 'package:otp_boxes/screens/game_screen.dart';
 import 'package:otp_boxes/screens/login_screen.dart';
 import 'package:otp_boxes/screens/settings_screen.dart';
@@ -21,6 +23,7 @@ Future<void> main() async {
     ),
     UserDetailsSharedPref.init(),
   ]);
+  await Firebase.initializeApp();
   try{
     await FirebaseAppCheck.instance.activate(
       webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
@@ -32,6 +35,7 @@ Future<void> main() async {
     print("Error activating Firebase App Check: $e");
   }
   await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+
   
   runApp(const ProviderScope(
     child: MainScreen(),

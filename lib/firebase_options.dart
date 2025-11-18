@@ -41,48 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyD21HilhQBdpBFXNcuuEEdU01Wp8bH9sm4',
-    appId: '1:415880282002:web:37f17eb99f54e319080b4b',
-    messagingSenderId: '415880282002',
-    projectId: 'wordle-services',
-    authDomain: 'wordle-services.firebaseapp.com',
-    storageBucket: 'wordle-services.firebasestorage.app',
-    measurementId: 'G-GBBNPYLNVW',
+    apiKey: 'AIzaSyCcEteO50mLq9audVJfj9jPEf0VNBw-m6U',
+    appId: '1:873429164398:web:404c6fe33e1c292f79617f',
+    messagingSenderId: '873429164398',
+    projectId: 'fir-auth-fa4df',
+    authDomain: 'fir-auth-fa4df.firebaseapp.com',
+    storageBucket: 'fir-auth-fa4df.firebasestorage.app',
+    measurementId: 'G-6RF1RNGZPB',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBaHzKnf8Z9BeoEDPMbaxp_yU3NhNUY-Vs',
-    appId: '1:415880282002:android:d99b5c82fdb826ee080b4b',
-    messagingSenderId: '415880282002',
-    projectId: 'wordle-services',
-    storageBucket: 'wordle-services.firebasestorage.app',
+    apiKey: 'AIzaSyALbrdQoFup3SR4pEjyTOJMIsQ7zE22c34',
+    appId: '1:873429164398:android:abd281341f95419779617f',
+    messagingSenderId: '873429164398',
+    projectId: 'fir-auth-fa4df',
+    storageBucket: 'fir-auth-fa4df.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCkoEeaMhB5kkWxTLLz5Nw1inv0GDNEMQw',
-    appId: '1:415880282002:ios:4045286a2b4d30ad080b4b',
-    messagingSenderId: '415880282002',
-    projectId: 'wordle-services',
-    storageBucket: 'wordle-services.firebasestorage.app',
+    apiKey: 'AIzaSyBHKwiU10lyg_F29bMtdJFlvRUDZdoc5co',
+    appId: '1:873429164398:ios:8fb2076993b8b25b79617f',
+    messagingSenderId: '873429164398',
+    projectId: 'fir-auth-fa4df',
+    storageBucket: 'fir-auth-fa4df.firebasestorage.app',
     iosBundleId: 'com.example.otpBoxes',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCkoEeaMhB5kkWxTLLz5Nw1inv0GDNEMQw',
-    appId: '1:415880282002:ios:4045286a2b4d30ad080b4b',
-    messagingSenderId: '415880282002',
-    projectId: 'wordle-services',
-    storageBucket: 'wordle-services.firebasestorage.app',
+    apiKey: 'AIzaSyBHKwiU10lyg_F29bMtdJFlvRUDZdoc5co',
+    appId: '1:873429164398:ios:8fb2076993b8b25b79617f',
+    messagingSenderId: '873429164398',
+    projectId: 'fir-auth-fa4df',
+    storageBucket: 'fir-auth-fa4df.firebasestorage.app',
     iosBundleId: 'com.example.otpBoxes',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyD21HilhQBdpBFXNcuuEEdU01Wp8bH9sm4',
-    appId: '1:415880282002:web:dd02c1a6e5868887080b4b',
-    messagingSenderId: '415880282002',
-    projectId: 'wordle-services',
-    authDomain: 'wordle-services.firebaseapp.com',
-    storageBucket: 'wordle-services.firebasestorage.app',
-    measurementId: 'G-B3NMSW8TJ5',
+    apiKey: 'AIzaSyCcEteO50mLq9audVJfj9jPEf0VNBw-m6U',
+    appId: '1:873429164398:web:8a39bbe91c9945d979617f',
+    messagingSenderId: '873429164398',
+    projectId: 'fir-auth-fa4df',
+    authDomain: 'fir-auth-fa4df.firebaseapp.com',
+    storageBucket: 'fir-auth-fa4df.firebasestorage.app',
+    measurementId: 'G-9MCW26S2X0',
   );
+
 }
